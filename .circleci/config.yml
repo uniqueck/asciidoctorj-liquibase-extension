@@ -1,0 +1,92 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:11-jdk
+    steps:
+      - checkout
+      - run:
+          name: Install Graphiz
+          command: sudo apt-get install graphviz
+      - run: |
+          if [[ "$CIRCLE_TAG" != "" ]]; then
+            VERSION="$(echo "$CIRCLE_TAG" | grep -Po '(?<=v).*')"
+            mvn versions:set -DnewVersion=${VERSION} versions:commit
+          fi
+      - run:
+          name: Build and Test
+          command: mvn -B package
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/test-results/junit/
+            find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
+          when: always
+      - store_test_results:
+          path: ~/test-results
+      - store_artifacts:
+          path: ~/test-results/junit
+      #- persist_to_workspace:
+      #    root: target
+      #    paths:
+      #      - generated-docs
+  release:
+    docker:
+      - image: circleci/openjdk:11-jdk
+    steps:
+      - checkout
+      - run:
+          name: Install Graphiz
+          command: sudo apt-get install graphviz
+      - run: |
+          if [[ "$CIRCLE_TAG" != "" ]]; then
+            VERSION="$(echo "$CIRCLE_TAG" | grep -Po '(?<=v).*')"
+            mvn versions:set -DnewVersion=${VERSION} versions:commit
+          fi
+      - run:
+          name: Build and Test
+          command: mvn -s .circleci/settings.xml -B deploy -DskipTests
+  docs-deploy:
+    docker:
+      - image: node:8.10.0
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ./target
+      - run:
+          name: "show content of directory"
+          command: ls target/generated-docs
+      - run:
+          name: "Disable jekyll builds"
+          command: touch target/generated-docs/.nojekyll
+      - run:
+          name: "show content of directory"
+          command: ls target/generated-docs
+      - run:
+          name: "Install and configure dependencies"
+          command: |
+            npm install -g --silent gh-pages@2.0.1
+            git config user.email "ci-build@constantinidis.de"
+            git config user.name "ci-build"
+      - add_ssh_keys:
+          fingerprints:
+            - "69:4c:df:d5:bf:e8:b0:fa:86:73:91:4b:a7:16:52:c7"
+      - run:
+          name: "Deploy docs to gh-pages branch"
+          command: gh-pages --dotfiles --message "[skip ci] Updates" --dist target/generated-docs
+workflows:
+  version: 2
+  build-n-deploy:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
+      - release:
+            requires:
+              - build
+            filters:
+              tags:
+                only: /^v.*/
+              branches:
+                ignore: /.*/
