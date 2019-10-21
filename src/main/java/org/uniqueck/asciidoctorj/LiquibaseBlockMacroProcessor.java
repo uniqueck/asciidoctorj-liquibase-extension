@@ -2,16 +2,32 @@ package org.uniqueck.asciidoctorj;
 
 import org.asciidoctor.ast.StructuralNode;
 import org.asciidoctor.extension.BlockMacroProcessor;
+import org.asciidoctor.extension.Name;
+import org.jdom2.Document;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Name("liquibase")
 public class LiquibaseBlockMacroProcessor extends BlockMacroProcessor {
 
 
     protected  List<String> generateAsciiDocMarkup(StructuralNode parent, File sourceFile, Map<String, Object> attributes) {
+
+        SAXBuilder saxBuilder = new SAXBuilder();
+        try {
+            Document jdomDocument2 = saxBuilder.build(sourceFile);
+        } catch (JDOMException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return new ArrayList<>();
     }
 

@@ -2,7 +2,7 @@
 :version: 1.0-SNAPSHOT
 = AsciidoctorJ Liquibase Extension
 
-image:https://circleci.com/gh/uniqueck/asciidoctorj-liqubase-extension/tree/master.svg?style=shield["CircleCI", link="https://circleci.com/gh/uniqueck/asciidoctorj-liquibase-extension/tree/master"]
+image:https://circleci.com/gh/uniqueck/asciidoctorj-liquibase-extension/tree/master.svg?style=shield["CircleCI", link="https://circleci.com/gh/uniqueck/asciidoctorj-liquibase-extension/tree/master"]
 image:https://img.shields.io/badge/License-MIT-yellow.svg["MIT License", link="https://opensource.org/licenses/MIT"]
 image:https://api.bintray.com/packages/uniqueck/asciidoctorj/asciidoctorj-liquibase-extension/images/download.svg[link="https://bintray.com/uniqueck/asciidoctorj/asciidoctorj-liquibase-extension/_latestVersion"]
 
