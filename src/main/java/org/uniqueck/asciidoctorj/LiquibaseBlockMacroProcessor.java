@@ -3,12 +3,10 @@ package org.uniqueck.asciidoctorj;
 import org.asciidoctor.ast.StructuralNode;
 import org.asciidoctor.extension.BlockMacroProcessor;
 import org.asciidoctor.extension.Name;
-import org.jdom2.Document;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
+import org.uniqueck.asciidoctorj.liquibase.LiquibaseChangesetParser;
+import org.uniqueck.asciidoctorj.liquibase.model.Table;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,17 +16,26 @@ public class LiquibaseBlockMacroProcessor extends BlockMacroProcessor {
 
 
     protected  List<String> generateAsciiDocMarkup(StructuralNode parent, File sourceFile, Map<String, Object> attributes) {
+        List<String>  content = new ArrayList<>();
+        Map<String, Table> parsedTables = new LiquibaseChangesetParser().parse(sourceFile);
 
-        SAXBuilder saxBuilder = new SAXBuilder();
-        try {
-            Document jdomDocument2 = saxBuilder.build(sourceFile);
-        } catch (JDOMException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        content.add("[plantuml]");
+        content.add("----");
+        content.add("!define Table(name,desc) class name as \"desc\" << (T,#FFAAAA) >>");
+        content.add("!define primary_key(x) <b>x</b>");
+        content.add("!define unique(x) <color:green>x</color>");
+        content.add("!define not_null(x) <u>x</u>");
+        content.add("hide methods");
+        content.add("hide stereotypes");
+
+
+        content.add("'entities");
+        for (Table table : parsedTables.values()) {
+            content.add("Table(" + table.getName()+  "," + table.getName() + ")");
         }
+        content.add("----");
 
-        return new ArrayList<>();
+        return content;
     }
 
     @Override
