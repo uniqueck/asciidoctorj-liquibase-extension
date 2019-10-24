@@ -44,3 +44,13 @@ To use this extension declare it as a dependency in asciidoctor-maven-plugin con
 
 <1> asciidoctorj-liquibase-extension is added
 <2> check for the latest version at https://bintray.com/bintray/jcenter[JCenter]
+
+
+
+== ToDo
+
+* Styling of PlantUML like https://about.draw.io/entity-relationship-diagrams-with-draw-io/[Draw IO]
+* Support both styles of ERD
+* Styling options
+** with or without datatypes
+** line connections

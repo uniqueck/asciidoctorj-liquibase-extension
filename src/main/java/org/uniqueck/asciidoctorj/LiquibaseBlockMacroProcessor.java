@@ -17,7 +17,7 @@ public class LiquibaseBlockMacroProcessor extends BlockMacroProcessor {
 
     protected  List<String> generateAsciiDocMarkup(StructuralNode parent, File sourceFile, Map<String, Object> attributes) {
         List<String>  content = new ArrayList<>();
-        Map<String, Table> parsedTables = new LiquibaseChangesetParser().parse(sourceFile);
+        Map<String, Table> parsedTables = new LiquibaseChangesetParser(sourceFile).parse();
 
         content.add("[plantuml]");
         content.add("----");

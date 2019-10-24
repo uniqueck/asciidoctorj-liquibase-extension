@@ -15,3 +15,6 @@ buildNumber.properties
 *.ipr
 *.iml
 /.idea/
+
+*.lfet.*.$bak
+*.lfet_$temp

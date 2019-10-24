@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+  
+  	<!-- Deployment_Job Seq - Start -->
+	<changeSet author="author@x.de" id="create_Deployment_Job_SEQ">
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>
+            	<sequenceExists sequenceName="DEPLOYMENTJOB_SEQ"/>
+        	</not>    	    
+		</preConditions> 	
+		<createSequence incrementBy="1" sequenceName="DEPLOYMENTJOB_SEQ" startValue="1"/>
+ 	</changeSet>
+ 	<!-- Deployment_Job Seq - Ende -->
+ 	
+ 	<!-- Deployment_Job Table - Start -->
+ 	<changeSet author="author@x.de" id="create_Deployment_Job_TAB">
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>            	
+            	<tableExists tableName="DEPLOYMENT_JOB"/>
+        	</not>    	    
+		</preConditions> 	
+		<createTable tableName="DEPLOYMENT_JOB">
+			<column name="ID" type="number">
+				<constraints nullable="false" />
+			</column>
+			
+			<column name="NAME" type="varchar(100)" />			
+			<column name="PROJEKTNAME" type="varchar(100)" />			
+			<column name="DEPLOYMENTART" type="varchar(20)" />
+			
+			<column name="STATUS" type="varchar(10)" defaultValue="AKTIV">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		
+		<addUniqueConstraint tableName="DEPLOYMENT_JOB" columnNames="PROJEKTNAME" constraintName="DEPLOYMENT_JOB_UK1" />
+ 		
+ 		<sql>ALTER TABLE DEPLOYMENT_JOB ADD CONSTRAINT DEPLOYMENT_JOB_CHK2 CHECK (STATUS IN ('AKTIV', 'INAKTIV'))</sql>
+ 		<sql>ALTER TABLE DEPLOYMENT_JOB ADD CONSTRAINT DEPLOYMENT_JOB_CHK1 CHECK (DEPLOYMENTART IN ('SERVER', 'CLIENT'))</sql>
+ 		
+	</changeSet>
+	<!-- Deployment_Job Table - Ende -->
+	
+ 	<!-- Deployment_Job Primary Key - Start -->
+ 	<changeSet author="author@x.de" id="create_Deployment_Job_PK">
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>            	
+            	<primaryKeyExists tableName="DEPLOYMENT_JOB" primaryKeyName="DEPLOYMENTJOB_PK"/>
+        	</not>    	    
+		</preConditions>
+		<addPrimaryKey tableName="DEPLOYMENT_JOB" columnNames="ID" constraintName="DEPLOYMENTJOB_PK" />		
+	</changeSet>
+	<!-- DeploymentLog Primary Key - Ende -->
+
+	
+	<!-- Deployment_Job Trigger - Start -->
+ 	<changeSet author="author@x.de" id="create_Deployment_Job_TRG">
+ 		<sql dbms="hsqldb">CREATE TRIGGER DEPLOYMENT_JOB_TRIGGER BEFORE INSERT ON DEPLOYMENT_JOB REFERENCING NEW ROW AS newrow FOR EACH ROW SET newrow.ID = NEXT VALUE FOR DEPLOYMENTJOB_SEQ</sql>
+		<createProcedure dbms="oracle">
+			create or replace TRIGGER DEPLOYMENT_JOB_TRIGGER 
+   				before insert on DEPLOYMENT_JOB 
+   					for each row 
+						begin  
+   							if inserting then 
+      							if :NEW."ID" is null then 
+         							select DEPLOYMENTJOB_SEQ.nextval into :NEW."ID" from dual; 
+      							end if; 
+   							end if; 
+						end;
+		</createProcedure>		 		
+	</changeSet>
+	<!-- DeploymentLog Trigger - Ende -->
+	
+	
+		
+	
+	
+	<changeSet author="author@x.de" id="tag-1.0">
+		<tagDatabase tag="1.0"/>
+	</changeSet>
+	
+
+</databaseChangeLog>

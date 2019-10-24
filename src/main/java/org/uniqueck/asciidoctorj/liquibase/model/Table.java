@@ -8,6 +8,8 @@ import lombok.ToString;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @ToString
 @EqualsAndHashCode
@@ -24,7 +26,7 @@ public class Table {
     }
 
     public Column add(String name, String type) {
-        Column column = new Column(name, type);
+        Column column = new Column(getName(), name, type);
         this.columns.add(column);
         return column;
     }
@@ -33,5 +35,13 @@ public class Table {
         return Collections.unmodifiableList(columns);
     }
 
+    public Map<String, Column> getColumnsAsMap() {
+        return getColumns().stream().collect(Collectors.toMap(Column::getName, c -> c));
+    }
 
+
+    public void removeColumn(String columnName) {
+        Column column = getColumnsAsMap().get(columnName);
+        this.columns.remove(column);
+    }
 }

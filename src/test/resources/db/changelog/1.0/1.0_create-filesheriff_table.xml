@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+  
+  	
+	<changeSet author="author@x.de" id="create_File_Sheriff_SEQ"> 		
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>
+            	<sequenceExists sequenceName="FILE_SHERIFF_SEQ"/>
+        	</not>    	    
+		</preConditions> 	
+		<createSequence incrementBy="1" sequenceName="FILE_SHERIFF_SEQ" startValue="1"/>
+ 	</changeSet>
+  	
+  	
+  	
+  	
+	<changeSet author="author@x.de" id="create_FileSheriff_TAB">
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>            	
+            	<tableExists tableName="FILE_SHERIFF"/>
+        	</not>    	    
+		</preConditions> 	
+		
+		<createTable tableName="FILE_SHERIFF">
+			<column name="ID" type="number">
+				<constraints nullable="false" />
+			</column>
+
+			<column name="MD5" type="varchar(32)">
+				<constraints nullable="false" />
+			</column>
+
+			<column name="FILENAME" type="varchar(150)" />
+			
+			<column name="TIMESTAMP" type="datetime(6)" defaultValueComputed="sysdate" >
+				<constraints nullable="false" />
+			</column>
+			
+			<column name="PROJEKTNAME" type="varchar(100)" />
+			<column name="TAGCVS" type="varchar(200)" />
+			<column name="VERSION" type="varchar(20)" />
+			<column name="BUILD_ON" type="varchar(50)" />			
+		</createTable>	
+ 		
+	</changeSet>  	
+ 	
+ 	
+	<changeSet author="author@x.de" id="create_FileSheriff_PK">
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>            	
+            	<primaryKeyExists tableName="FILE_SHERIFF" primaryKeyName="FILE_SHERRIF_PK"/>
+        	</not>    	    
+		</preConditions>		
+
+		<addPrimaryKey tableName="FILE_SHERIFF" columnNames="ID" constraintName="FILE_SHERRIF_PK" />
+ 		
+	</changeSet>  	
+ 	
+ 	
+ 	<changeSet author="author@x.de" id="create_File_Sheriff_TRG"> 		
+ 		<sql dbms="hsqldb">CREATE TRIGGER FILE_SHERIFF_TRIGGER BEFORE INSERT ON FILE_SHERIFF REFERENCING NEW ROW AS newrow FOR EACH ROW SET newrow.ID = NEXT VALUE FOR FILE_SHERIFF_SEQ</sql>
+		<createProcedure dbms="oracle">
+			create or replace TRIGGER FILE_SHERIFF_TRIGGER 
+   				before insert on FILE_SHERIFF 
+   					for each row 
+						begin  
+   							if inserting then 
+      							if :NEW."ID" is null then 
+         							select FILE_SHERIFF_SEQ.nextval into :NEW."ID" from dual; 
+      							end if; 
+   							end if; 
+						end;
+		</createProcedure>		 		
+	</changeSet>
+
+</databaseChangeLog>

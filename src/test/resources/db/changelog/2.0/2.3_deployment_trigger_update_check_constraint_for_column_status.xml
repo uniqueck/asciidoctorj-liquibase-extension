@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+	<changeSet author="author@x.de"
+		id="DT_DROP_CONSTRAINT_DEPLOYMENT_TRIGGER_CHK1">
+		<comment>drop check constraint, to recreate it in the next step
+		</comment>
+		<sql>ALTER TABLE DEPLOYMENT_TRIGGER DROP CONSTRAINT DEPLOYMENT_TRIGGER_CHK1</sql>
+	</changeSet>
+
+	<changeSet author="author@x.de" id="DT_CREATE_CONSTRAINT_DT_STATUS_CHECK_VL">
+		<comment>create check constraint, to check if inserted value for
+			column status is in list ('ERLEDIGT', 'IN_BEARBEITUNG', 'BEAUFTRAGT',
+			'FEHLER')</comment>
+		<sql>ALTER TABLE DEPLOYMENT_TRIGGER ADD CONSTRAINT DT_STATUS_CHECK_VL
+			CHECK (STATUS IN ('ERLEDIGT', 'IN_BEARBEITUNG', 'BEAUFTRAGT',
+			'FEHLER'))</sql>
+		<rollback>
+			<sql>ALTER TABLE DEPLOYMENT_TRIGGER DROP CONSTRAINT DT_STATUS_CHECK_VL</sql>
+		</rollback>
+	</changeSet>
+
+
+
+</databaseChangeLog>

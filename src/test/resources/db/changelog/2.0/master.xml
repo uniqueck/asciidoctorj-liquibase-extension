@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+	<include file="2.0_set-logtables-obsolete.xml" relativeToChangelogFile="true" />
+	<include file="2.0_add-column-output-to-trigger-table.xml" relativeToChangelogFile="true" />
+	<include file="2.0_add-unique_constraint_deployment_job_name.xml" relativeToChangelogFile="true" />
+	 
+	<changeSet author="author@x.de" id="tag-2.0">
+		<tagDatabase tag="2.0"/>
+	</changeSet>
+	
+	<include file="2.1_correct_data_in_deployment_log_table.xml" relativeToChangelogFile="true" />
+	<include file="2.1_change-trigger-table.xml" relativeToChangelogFile="true" />
+
+	<changeSet author="author@x.de" id="tag-2.1">
+		<tagDatabase tag="2.1"/>
+	</changeSet>
+	
+	<include file="2.2_deployment_job_remove_trigger.xml" relativeToChangelogFile="true" />
+	<include file="2.2_deployment_umgebung_remove_trigger.xml" relativeToChangelogFile="true" />
+	<include file="2.2_file_sheriff_remove_trigger.xml" relativeToChangelogFile="true" />
+		
+	<changeSet author="author@x.de" id="tag-2.2">
+		<tagDatabase tag="2.2"/>
+	</changeSet>
+	
+	<include file="2.3_deployment_trigger_delete_entries_with_status_ABEGBROCHEN.xml" relativeToChangelogFile="true" />
+	<include file="2.3_deployment_trigger_update_entries_with_status_GESTOPPT.xml" relativeToChangelogFile="true" />
+	<include file="2.3_deployment_trigger_update_check_constraint_for_column_status.xml" relativeToChangelogFile="true" />
+	
+	<changeSet author="author@x.de" id="tag-2.3">
+		<tagDatabase tag="2.3"/>
+	</changeSet>
+	
+
+	<changeSet author="author@x.de" id="tag-2.X.FINAL">
+		<tagDatabase tag="2.X.FINAL" />
+	</changeSet>
+
+</databaseChangeLog>
