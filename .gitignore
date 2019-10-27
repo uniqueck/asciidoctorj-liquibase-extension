@@ -18,3 +18,4 @@ buildNumber.properties
 
 *.lfet.*.$bak
 *.lfet_$temp
+.asciidoctor/

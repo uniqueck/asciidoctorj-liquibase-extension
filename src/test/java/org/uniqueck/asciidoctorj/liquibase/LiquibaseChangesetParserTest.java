@@ -1,6 +1,5 @@
 package org.uniqueck.asciidoctorj.liquibase;
 
-import com.sun.istack.internal.NotNull;
 import org.junit.jupiter.api.Test;
 import org.uniqueck.asciidoctorj.liquibase.model.Column;
 import org.uniqueck.asciidoctorj.liquibase.model.Table;
@@ -193,7 +192,7 @@ class LiquibaseChangesetParserTest {
         assertColumn("VORHERIGEVERSION", "number", false, columns);
     }
 
-    private void assertDeploymentJobTable(@NotNull Map<String, Table> parsedTables) {
+    private void assertDeploymentJobTable(Map<String, Table> parsedTables) {
         Table table = parsedTables.get("DEPLOYMENT_JOB");
         assertNotNull(table);
         assertEquals("DEPLOYMENT_JOB", table.getName());
@@ -209,7 +208,7 @@ class LiquibaseChangesetParserTest {
 
     }
 
-    private void assertFileSheriffTable(@NotNull  Map<String, Table> parsedTables) {
+    private void assertFileSheriffTable(Map<String, Table> parsedTables) {
         Table table = parsedTables.get("FILE_SHERIFF");
         assertNotNull(table);
         assertEquals("FILE_SHERIFF", table.getName());
@@ -228,7 +227,7 @@ class LiquibaseChangesetParserTest {
 
     }
 
-    private void assertFileSheriffTable_TillTag_1_X_FINAL(@NotNull  Map<String, Table> parsedTables) {
+    private void assertFileSheriffTable_TillTag_1_X_FINAL(Map<String, Table> parsedTables) {
         Table table = parsedTables.get("FILE_SHERIFF");
         assertNotNull(table);
         assertEquals("FILE_SHERIFF", table.getName());

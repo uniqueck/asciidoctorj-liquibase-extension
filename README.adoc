@@ -1,12 +1,13 @@
 :icons: font
 :version: 1.0-SNAPSHOT
+:imagesdir: doc/images
 = AsciidoctorJ Liquibase Extension
 
 image:https://circleci.com/gh/uniqueck/asciidoctorj-liquibase-extension/tree/master.svg?style=shield["CircleCI", link="https://circleci.com/gh/uniqueck/asciidoctorj-liquibase-extension/tree/master"]
 image:https://img.shields.io/badge/License-MIT-yellow.svg["MIT License", link="https://opensource.org/licenses/MIT"]
 image:https://api.bintray.com/packages/uniqueck/asciidoctorj/asciidoctorj-liquibase-extension/images/download.svg[link="https://bintray.com/uniqueck/asciidoctorj/asciidoctorj-liquibase-extension/_latestVersion"]
 
-This AsciidoctorJ extension provides a macro to generate a entity relationship model based on liquibase changeset files.
+This AsciidoctorJ extension provides a macro to generate a entity relationship diagram based on https://www.liquibase.org/index.html[liquibase] changeset files. Currently only xml format for liquibase changeset files are supported.
 
 == Installation
 
@@ -46,6 +47,30 @@ To use this extension declare it as a dependency in asciidoctor-maven-plugin con
 <2> check for the latest version at https://bintray.com/bintray/jcenter[JCenter]
 
 
+== How To Use
+
+.liquibase macro without attributes
+[source, asciidoc]
+----
+liquibase::src/test/resources/db/db.changelog-master.xml[]
+----
+
+.Generated image for liquibase macro
+image::db.changelog-master.png[]
+
+
+.liquibase macro with attribute tillTag set to 1.X.FINAL
+[source, asciidoc]
+----
+liquibase::src/test/resources/db/db.changelog-master.xml[tillTag=1.X.FINAL]
+----
+
+.Generated image for liquibase macro with attribute tillTag
+image::db.changelog-master_1.X.FINAL.png[]
+
+=== Attributes
+
+* *tillTag* parse liquibase changeset files only until tagDatabase matched definied value
 
 == ToDo
 
@@ -54,3 +79,7 @@ To use this extension declare it as a dependency in asciidoctor-maven-plugin con
 * Styling options
 ** with or without datatypes
 ** line connections
+
+* see for grouping and associations  http://plantuml.com/de/class-diagram
+* see for entity relationship diagram http://plantuml.com/de/ie-diagram
+* define how to detect cardinality of relationships

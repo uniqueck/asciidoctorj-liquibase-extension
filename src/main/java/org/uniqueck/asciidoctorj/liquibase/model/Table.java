@@ -39,9 +39,13 @@ public class Table {
         return getColumns().stream().collect(Collectors.toMap(Column::getName, c -> c));
     }
 
-
     public void removeColumn(String columnName) {
         Column column = getColumnsAsMap().get(columnName);
         this.columns.remove(column);
     }
+
+    public List<String> getReferencedTables() {
+        return getColumns().stream().filter(c -> c.getForeignKeyColumn() != null).map(c -> c.getForeignKeyColumn().getOwnedTableName()).distinct().collect(Collectors.toList());
+    }
+
 }

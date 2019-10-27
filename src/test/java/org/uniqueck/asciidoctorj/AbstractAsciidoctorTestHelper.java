@@ -2,10 +2,7 @@ package org.uniqueck.asciidoctorj;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.asciidoctor.Asciidoctor;
-import org.asciidoctor.Options;
-import org.asciidoctor.OptionsBuilder;
-import org.asciidoctor.SafeMode;
+import org.asciidoctor.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.io.TempDir;
@@ -30,12 +27,13 @@ public abstract class AbstractAsciidoctorTestHelper {
     private Asciidoctor asciidoctor;
 
     protected Options createOptions() {
-        return OptionsBuilder.options().baseDir(getBaseDir()).inPlace(true).safe(SafeMode.UNSAFE).backend("html5").toFile(false).destinationDir(tempDir.getAbsoluteFile()).get();
+        return OptionsBuilder.options().baseDir(getBaseDir()).inPlace(true).safe(SafeMode.UNSAFE).backend("html5").toFile(false).destinationDir(tempDir.getAbsoluteFile()).attributes(AttributesBuilder.attributes().attribute("imagesdir", new File(tempDir, "images").getAbsolutePath())).get();
     }
 
     @BeforeEach
     void setup() {
         asciidoctor = Asciidoctor.Factory.create();
+        asciidoctor.requireLibrary("asciidoctor-diagram");
         new LiquibaseExtensionRegistry().register(asciidoctor);
     }
 
