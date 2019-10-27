@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+  
+  	<!-- Deployment_Trigger Seq - Start -->
+	<changeSet author="author@x.de" id="create_Deployment_Trigger_SEQ"> 		
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>
+            	<sequenceExists sequenceName="DEPLOYMENT_TRIGGER_SEQ"/>
+        	</not>    	    
+		</preConditions> 	
+		<createSequence incrementBy="1" sequenceName="DEPLOYMENT_TRIGGER_SEQ" startValue="1"/>
+ 	</changeSet>
+ 	<!-- Deployment_Trigger Seq - Ende -->
+ 	
+ 	<!-- Deployment_Trigger Table - Start -->
+ 	<changeSet author="author@x.de" id="create_Deployment_Trigger_TAB">
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>            	
+            	<tableExists tableName="DEPLOYMENT_TRIGGER"/>
+        	</not>    	    
+		</preConditions> 	
+		<createTable tableName="DEPLOYMENT_TRIGGER">
+			<column name="ID" type="number">
+				<constraints nullable="false" />
+			</column>
+
+			<column name="ZEITPUNKT" type="datetime(6)">
+				<constraints nullable="false" />
+			</column>
+
+			<column name="BEAUFTRAGENDER_USER" type="varchar(100)">
+				<constraints nullable="false" />
+			</column>
+			<column name="BEAUFTRAGENDER_USERNAME" type="varchar(100)" />
+			<column name="BEAUFTRAGENDER_EMAIL" type="varchar(150)" />
+
+			<column name="FILESHERIFF_ID" type="numeric">
+			    <constraints nullable="false" />
+			</column>
+
+			<column name="DEPLOYMENTUMGEBUNG_ID" type="numeric">
+			    <constraints nullable="false" />
+			</column>
+			
+			<column name="STATUS" type="varchar(20)" defaultValue="BEAUFTRAGT">
+			    <constraints nullable="false" />
+			</column>
+			
+			<column name="REFERENZ_ART" type="varchar(20)" defaultValue="OTHER">
+			    <constraints nullable="false" />
+			</column>
+
+			<column name="REFERENZ_ID" type="varchar(20)">
+			    <constraints nullable="false" />
+			</column>
+						
+			<column name="FEHLERCODE" type="varchar(25)" />
+			<column name="FEHLERMESSAGE" type="varchar(255)" />			
+
+		</createTable>
+ 		
+ 		<sql>ALTER TABLE DEPLOYMENT_TRIGGER ADD CONSTRAINT DEPLOYMENT_TRIGGER_CHK1 CHECK (STATUS IN ('ERLEDIGT', 'IN_BEARBEITUNG', 'BEAUFTRAGT', 'FEHLER', 'GESTOPPT', 'ABGEBROCHEN'))</sql>
+		<sql>ALTER TABLE DEPLOYMENT_TRIGGER ADD CONSTRAINT DEPLOYMENT_TRIGGER_CHK2 CHECK (REFERENZ_ART IN ('JIRA', 'OTHER'))</sql>
+
+ 		
+	</changeSet>
+	<!-- Deployment_Trigger Table - Ende -->
+	
+ 	<!-- Deployment_Trigger Primary Key - Start -->
+ 	<changeSet author="author@x.de" id="create_Deployment_Trigger_PK">
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>            	
+            	<primaryKeyExists tableName="DEPLOYMENT_TRIGGER" primaryKeyName="DEPLOYMENT_TRIGGER_PK"/>
+        	</not>    	    
+		</preConditions>
+		<addPrimaryKey tableName="DEPLOYMENT_TRIGGER" columnNames="ID" constraintName="DEPLOYMENT_TRIGGER_PK" />		
+	</changeSet>
+	<!-- Deployment_Trigger Primary Key - Ende -->
+
+	<!-- Deployment_Trigger Add Foreign Key - Start -->
+ 	<changeSet author="author@x.de" id="add_Deployment_Trigger_ForeignKey_Deployment_Umgebung">
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>            	
+    	    	<foreignKeyConstraintExists foreignKeyName="DEPLOYMENT_TRIGGER_DEPLOY_FK1" />
+        	</not>    	    
+		</preConditions>
+		<addForeignKeyConstraint baseTableName="DEPLOYMENT_TRIGGER" baseColumnNames="DEPLOYMENTUMGEBUNG_ID" referencedTableName="DEPLOYMENT_UMGEBUNG" referencedColumnNames="ID" constraintName="DEPLOYMENT_TRIGGER_DEPLOY_FK1" />
+	</changeSet>
+	
+	<changeSet author="author@x.de" id="add_Deployment_Trigger_ForeignKey_FileSheriff">
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>
+    	    	<foreignKeyConstraintExists foreignKeyName="DEPLOYMENT_TRIGGER_FILE_S_FK1" />
+    	    </not>    	    
+		</preConditions>
+		<addForeignKeyConstraint baseTableName="DEPLOYMENT_TRIGGER" baseColumnNames="FILESHERIFF_ID" referencedTableName="FILE_SHERIFF" referencedColumnNames="ID" constraintName="DEPLOYMENT_TRIGGER_FILE_S_FK1" />
+	</changeSet>
+	<!-- Deployment_Trigger Add Foreign Key - Ende -->
+
+	
+	<!-- Deployment_Trigger Trigger - Start -->
+ 	<changeSet author="author@x.de" id="create_Deployment_Trigger_TRG"> 		
+ 		<sql dbms="hsqldb">CREATE TRIGGER DEPLOYMENT_TRIGGER_TRIGGER BEFORE INSERT ON DEPLOYMENT_TRIGGER REFERENCING NEW ROW AS newrow FOR EACH ROW SET newrow.ID = NEXT VALUE FOR DEPLOYMENT_TRIGGER_SEQ</sql>
+		<createProcedure dbms="oracle">
+			create or replace TRIGGER DEPLOYMENT_TRIGGER_TRIGGER 
+   				before insert on DEPLOYMENT_TRIGGER 
+   					for each row 
+						begin  
+   							if inserting then 
+      							if :NEW."ID" is null then 
+         							select DEPLOYMENT_TRIGGER_SEQ.nextval into :NEW."ID" from dual; 
+      							end if; 
+   							end if; 
+						end;
+		</createProcedure>		 		
+	</changeSet>
+	<!-- Deployment_Trigger Trigger - Ende -->
+
+</databaseChangeLog>

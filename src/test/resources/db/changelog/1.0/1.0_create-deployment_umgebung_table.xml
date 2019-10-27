@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+  
+  	<!-- Deployment_Umgebung Seq - Start -->
+	<changeSet author="author@x.de" id="create_Deployment_Umgebung_SEQ"> 		
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>
+            	<sequenceExists sequenceName="DEPLOYMENTUMGEBUNG_SEQ"/>
+        	</not>    	    
+		</preConditions> 	
+		<createSequence incrementBy="1" sequenceName="DEPLOYMENTUMGEBUNG_SEQ" startValue="1"/>
+ 	</changeSet>
+ 	<!-- Deployment_Umgebung Seq - Ende -->
+ 	
+ 	<!-- Deployment_Umgebung Table - Start -->
+ 	<changeSet author="author@x.de" id="create_Deployment_Umgebung_TAB">
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>            	
+            	<tableExists tableName="DEPLOYMENT_UMGEBUNG"/>
+        	</not>    	    
+		</preConditions> 	
+		<createTable tableName="DEPLOYMENT_UMGEBUNG">
+			<column name="ID" type="number">
+				<constraints nullable="false" />
+			</column>
+			
+			<column name="DEPLOYMENTJOB_ID" type="number">
+				<constraints nullable="false" />
+			</column>
+			
+			<column name="SUFFIX" type="varchar(20)" />
+			
+			<column name="STAGE" type="varchar(40)">
+				<constraints nullable="false" />
+			</column>
+
+			<column name="CONFIG" type="clob">
+				<constraints nullable="false" />
+			</column>
+			
+			<column name="STATUS" type="varchar(10)" />			
+
+		</createTable>
+ 		
+ 		<addUniqueConstraint tableName="DEPLOYMENT_UMGEBUNG" columnNames="DEPLOYMENTJOB_ID, SUFFIX, STAGE" constraintName="DEPLOYMENT_UMGEBUNG_UK1" />
+ 		
+ 		<sql>ALTER TABLE DEPLOYMENT_UMGEBUNG ADD CONSTRAINT DEPLOYMENT_UMGEBUNG_CHK1 CHECK (STAGE IN ('PRODUKTION', 'DVTEST', 'PRODTEST', 'FACHTEST', 'ENTWICKLUNG'))</sql>
+ 		<sql>ALTER TABLE DEPLOYMENT_UMGEBUNG ADD CONSTRAINT DEPLOYMENT_UMGEBUNG_CHK2 CHECK (STATUS IN ('AKTIV', 'INAKTIV'))</sql>
+ 		
+ 		
+	</changeSet>
+	<!-- Deployment_Umgebung Table - Ende -->
+	
+ 	<!-- Deployment_Umgebung Primary Key - Start -->
+ 	<changeSet author="author@x.de" id="create_Deployment_Umgebung_PK">
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>            	
+            	<primaryKeyExists tableName="DEPLOYMENT_UMGEBUNG" primaryKeyName="DEPLOYMENT_UMGEBUNG_PK"/>
+        	</not>    	    
+		</preConditions>
+		<addPrimaryKey tableName="DEPLOYMENT_UMGEBUNG" columnNames="ID" constraintName="DEPLOYMENT_UMGEBUNG_PK" />		
+	</changeSet>
+	<!-- Deployment_Umgebung Primary Key - Ende -->
+
+	<!-- Deployment_Umgebung Add Foreign Key - Start -->
+ 	<changeSet author="author@x.de" id="add_Deployment_Umgebung_ForeignKey_Deployment_Job">
+ 		<preConditions onFail="MARK_RAN">
+    	    <and>
+		   	    <and>            	
+		   	    	<tableExists tableName="DEPLOYMENT_JOB"/>
+		           	<tableExists tableName="DEPLOYMENT_UMGEBUNG"/>
+		       	</and>
+        		<not>
+        			<foreignKeyConstraintExists foreignKeyName="DEPLOYMENT_UMGEBUNG_DEPLO_FK1"/>
+        		</not>
+        	</and>    	    
+		</preConditions>
+		<addForeignKeyConstraint baseTableName="DEPLOYMENT_UMGEBUNG" baseColumnNames="DEPLOYMENTJOB_ID" referencedTableName="DEPLOYMENT_JOB" referencedColumnNames="ID" constraintName="DEPLOYMENT_UMGEBUNG_DEPLO_FK1" />
+	</changeSet>
+	<!-- Deployment_Umgebung Add Foreign Key - Ende -->
+
+	
+	<!-- Deployment_Umgebung Trigger - Start -->
+ 	<changeSet author="author@x.de" id="create_Deployment_Job_TRG"> 		
+ 		<preConditions>
+            <sequenceExists sequenceName="DEPLOYMENTUMGEBUNG_SEQ"/>
+		</preConditions>
+ 		<sql dbms="hsqldb">CREATE TRIGGER DEPLOYMENT_UMGEBUNG_TRIGGER BEFORE INSERT ON DEPLOYMENT_UMGEBUNG REFERENCING NEW ROW AS newrow FOR EACH ROW SET newrow.ID = NEXT VALUE FOR DEPLOYMENTUMGEBUNG_SEQ</sql>
+		<createProcedure dbms="oracle">
+			create or replace TRIGGER DEPLOYMENT_UMGEBUNG_TRIGGER 
+   				before insert on DEPLOYMENT_UMGEBUNG 
+   					for each row 
+						begin  
+   							if inserting then 
+      							if :NEW."ID" is null then 
+         							select DEPLOYMENTUMGEBUNG_SEQ.nextval into :NEW."ID" from dual; 
+      							end if; 
+   							end if; 
+						end;
+		</createProcedure>		 		
+	</changeSet>
+	<!-- Deployment_Umgebung Trigger - Ende -->
+
+</databaseChangeLog>
