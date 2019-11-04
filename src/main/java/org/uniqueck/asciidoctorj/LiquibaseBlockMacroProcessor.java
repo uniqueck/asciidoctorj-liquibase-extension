@@ -3,6 +3,8 @@ package org.uniqueck.asciidoctorj;
 import org.asciidoctor.ast.StructuralNode;
 import org.asciidoctor.extension.BlockMacroProcessor;
 import org.asciidoctor.extension.Name;
+import org.asciidoctor.log.LogRecord;
+import org.asciidoctor.log.Severity;
 import org.uniqueck.asciidoctorj.liquibase.LiquibaseChangesetParser;
 import org.uniqueck.asciidoctorj.liquibase.model.Column;
 import org.uniqueck.asciidoctorj.liquibase.model.Table;
@@ -17,15 +19,31 @@ import java.util.stream.Collectors;
 public class LiquibaseBlockMacroProcessor extends BlockMacroProcessor {
 
 
-    protected  List<String> generateAsciiDocMarkup(StructuralNode parent, File sourceFile, Map<String, Object> attributes) {
+    List<String> generateAsciiDocMarkup(@SuppressWarnings("unused") StructuralNode parent, File sourceFile, Map<String, Object> attributes) {
         List<String>  content = new ArrayList<>();
-        Map<String, Table> parsedTables = new LiquibaseChangesetParser(sourceFile, getTillTag(attributes)).parse();
+        Map<String, Table> parsedTables = new LiquibaseChangesetParser(sourceFile, getTillTag(attributes), new LiquibaseChangesetParser.LoggingFacade() {
+            @Override
+            public void logIgnoredElement(String element) {
+                log(new LogRecord(Severity.DEBUG, String.format(LOG_MESSAGE_IGNORED_ELEMENT, element)));
+            }
+
+            @Override
+            public void logUnsupportedElement(String element) {
+                log(new LogRecord(Severity.WARN, String.format(LOG_MESSAGE_UNSUPPORTED_ELEMENT, element)));
+            }
+
+            @Override
+            public void logParsingError(File inputFile, Exception cause) {
+                log(new LogRecord(Severity.FATAL, "Error on parsing '" +  inputFile.getPath() + "' : " + cause.getMessage()));
+            }
+        }).parse();
 
         content.add("[plantuml]");
         content.add("----");
 
         content.add("'hide the spot");
         content.add("hide circle");
+        content.add("skinparam tabSize 4");
 
         content.add("' avoid problems with angled crows feet");
         content.add("skinparam linetype ortho");
@@ -34,14 +52,14 @@ public class LiquibaseBlockMacroProcessor extends BlockMacroProcessor {
         for (Table table : parsedTables.values()) {
             content.add("Entity \"" + table.getName()+  "\" {");
             for (Column column : table.getColumns().stream().filter(Column::isPrimary).collect(Collectors.toList())) {
-                content.add("<<PK>> " + column.getName() + " : " + column.getType());
+                content.add("<<PK>>\\t" + column.getName() + " : " + column.getType());
             }
             content.add("--");
             for (Column column : table.getColumns().stream().filter(c -> !c.isPrimary()).collect(Collectors.toList())) {
                 if (column.getForeignKeyColumn() != null) {
-                    content.add("<<FK>> " + column.getName() + " : " + column.getType());
+                    content.add("<<FK>>\\t" + column.getName() + " : " + column.getType());
                 } else {
-                    content.add("       " + column.getName() + " : " + column.getType());
+                    content.add("\\t\\t" + column.getName() + " : " + column.getType());
                 }
 
             }
@@ -77,7 +95,7 @@ public class LiquibaseBlockMacroProcessor extends BlockMacroProcessor {
         return null;
     }
 
-    protected File getBuildDir(StructuralNode structuralNode) {
+    private File getBuildDir(StructuralNode structuralNode) {
         Map<Object, Object> globalOptions = structuralNode.getDocument().getOptions();
 
         String toDir = (String) globalOptions.get("to_dir");
@@ -86,7 +104,7 @@ public class LiquibaseBlockMacroProcessor extends BlockMacroProcessor {
         return new File(buildDir);
     }
 
-    protected String getAttribute(StructuralNode structuralNode, String attributeName, String defaultValue) {
+    private String getAttribute(StructuralNode structuralNode, String attributeName, String defaultValue) {
         String value = (String) structuralNode.getAttribute(attributeName);
 
         if (value == null || value.trim().isEmpty()) {
@@ -97,7 +115,7 @@ public class LiquibaseBlockMacroProcessor extends BlockMacroProcessor {
     }
 
 
-    protected File getTargetAsFile(StructuralNode structuralNode, String target) {
+    private File getTargetAsFile(StructuralNode structuralNode, String target) {
         String docdir = getAttribute(structuralNode, "docdir", "");
         return new File(docdir, target);
     }
