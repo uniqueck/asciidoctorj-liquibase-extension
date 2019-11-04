@@ -40,7 +40,22 @@ class LiquibaseChangesetParserTest {
 
     @Test
     void testParseDBChangeLog_TillTag_1_X_FINAL() {
-        Map<String, Table> parsedTables = new LiquibaseChangesetParser(new File("src/test/resources/db/db.changelog-master.xml"), "1.X.FINAL").parse();
+        Map<String, Table> parsedTables = new LiquibaseChangesetParser(new File("src/test/resources/db/db.changelog-master.xml"), "1.X.FINAL", new LiquibaseChangesetParser.LoggingFacade() {
+            @Override
+            public void logIgnoredElement(String element) {
+
+            }
+
+            @Override
+            public void logUnsupportedElement(String element) {
+                fail("Unsupported element '" + element + "' detected");
+            }
+
+            @Override
+            public void logParsingError(File inputFile, Exception cause) {
+
+            }
+        }).parse();
         assertNotNull(parsedTables);
         assertEquals(6, parsedTables.size());
         assertFileSheriffTable_TillTag_1_X_FINAL(parsedTables);

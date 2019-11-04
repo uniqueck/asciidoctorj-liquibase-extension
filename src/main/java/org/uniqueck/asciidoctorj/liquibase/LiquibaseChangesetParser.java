@@ -26,6 +26,19 @@ import java.util.Map;
 public class LiquibaseChangesetParser implements ILiquibaseParseChangelogFile {
 
 
+
+    public interface LoggingFacade {
+
+        String LOG_MESSAGE_IGNORED_ELEMENT = "skip tag '%s'";
+        String LOG_MESSAGE_UNSUPPORTED_ELEMENT = "Unsupported liquibase element '%s' detected";
+
+        void logIgnoredElement(String element);
+        void logUnsupportedElement(String element);
+        void logParsingError(File inputFile, Exception cause);
+
+    }
+
+    private LoggingFacade loggingFacade;
     public static final String TABLE_NAME = "tableName";
     public static final String COLUMN = "column";
     private static final String COLUMN_NAME = "columnName";
@@ -38,16 +51,31 @@ public class LiquibaseChangesetParser implements ILiquibaseParseChangelogFile {
     private final String tillTag;
     private boolean finishParsing;
 
-    public LiquibaseChangesetParser(File masterFile) {
-        this(new HashMap<>(), masterFile, null);
+    LiquibaseChangesetParser(File masterFile) {
+        this(new HashMap<>(), masterFile, null, new LoggingFacade() {
+            @Override
+            public void logIgnoredElement(String element) {
+                log.info(String.format(LOG_MESSAGE_IGNORED_ELEMENT, element));
+            }
+
+            @Override
+            public void logUnsupportedElement(String element) {
+                log.warn(String.format(LOG_MESSAGE_UNSUPPORTED_ELEMENT, element));
+            }
+
+            @Override
+            public void logParsingError(File inputFile, Exception cause) {
+                log.error("Error on parsing '" +  inputFile.getPath() + "'", cause);
+            }
+        });
     }
 
-    public LiquibaseChangesetParser(File masterFile, String tillTag) {
-        this(new HashMap<>(), masterFile, tillTag);
+    public LiquibaseChangesetParser(File masterFile, String tillTag, LoggingFacade loggingFacade) {
+        this(new HashMap<>(), masterFile, tillTag, loggingFacade);
     }
 
-    @SuppressWarnings("MoveFieldAssignmentToInitializer")
-    private LiquibaseChangesetParser(Map<String, Table> parsedTables, File masterFile, String tillTag) {
+    private LiquibaseChangesetParser(Map<String, Table> parsedTables, File masterFile, String tillTag, LoggingFacade loggingFacade) {
+        this.loggingFacade = loggingFacade;
         this.saxBuilder = new SAXBuilder();
         this.parsedTables = parsedTables;
         this.decisionTableRules = new LiquibaseParseChangelogFileRules();
@@ -78,10 +106,8 @@ public class LiquibaseChangesetParser implements ILiquibaseParseChangelogFile {
                     break;
                 }
             }
-        } catch (JDOMException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (JDOMException | IOException e) {
+            getLoggingFacade().logParsingError(getMasterFile(), e);
         }
         return Collections.unmodifiableMap(parsedTables);
     }
@@ -137,14 +163,14 @@ public class LiquibaseChangesetParser implements ILiquibaseParseChangelogFile {
     @Override
     public void doFollowInclude() {
         String fileName = getCurrentElement().getAttributeValue("file");
-        LiquibaseChangesetParser parser = new LiquibaseChangesetParser(getParsedTables(), new File(getMasterFile().getParentFile(), fileName), getTillTag());
+        LiquibaseChangesetParser parser = new LiquibaseChangesetParser(getParsedTables(), new File(getMasterFile().getParentFile(), fileName), getTillTag(), getLoggingFacade());
         parser.parse();
         this.finishParsing = parser.isFinishParsing();
     }
 
     @Override
     public void doLogUnsupportedElement() {
-        log.warn("Unsupported liquibase element '"  +getCurrentElement().getName() + "' detected");
+        getLoggingFacade().logUnsupportedElement(getCurrentElement().getAttributeValue("tag"));
     }
 
     @Override
@@ -159,7 +185,7 @@ public class LiquibaseChangesetParser implements ILiquibaseParseChangelogFile {
 
     @Override
     public void doParseChangeSet() {
-        this.finishParsing = new LiquibaseChangesetParser(getParsedTables(), getMasterFile(), getTillTag()).parse(getCurrentElement());
+        this.finishParsing = new LiquibaseChangesetParser(getParsedTables(), getMasterFile(), getTillTag(), getLoggingFacade()).parse(getCurrentElement());
     }
 
     @Override
@@ -308,7 +334,8 @@ public class LiquibaseChangesetParser implements ILiquibaseParseChangelogFile {
     @Override
     public void doSkipTag() {
         this.finishParsing = false;
-        log.info("skip tag '" + getCurrentElement().getAttributeValue("tag") + "'");
+        getLoggingFacade().logIgnoredElement(getCurrentElement().getAttributeValue("tag"));
+
     }
 
     @Override

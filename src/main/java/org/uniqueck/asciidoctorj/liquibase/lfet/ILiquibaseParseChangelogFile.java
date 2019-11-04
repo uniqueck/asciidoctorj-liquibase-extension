@@ -11,6 +11,7 @@
 
 package org.uniqueck.asciidoctorj.liquibase.lfet;
 
+@SuppressWarnings("ALL")
 public interface ILiquibaseParseChangelogFile
 {
  

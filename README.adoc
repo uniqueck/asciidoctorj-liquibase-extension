@@ -8,6 +8,7 @@ image:https://img.shields.io/badge/License-MIT-yellow.svg["MIT License", link="h
 image:https://api.bintray.com/packages/uniqueck/asciidoctorj/asciidoctorj-liquibase-extension/images/download.svg[link="https://bintray.com/uniqueck/asciidoctorj/asciidoctorj-liquibase-extension/_latestVersion"]
 
 This AsciidoctorJ extension provides a macro to generate a entity relationship diagram based on https://www.liquibase.org/index.html[liquibase] changeset files. Currently only xml format for liquibase changeset files are supported.
+This extensions needs __asciidoctor-diagram__ extension to work probably.
 
 == Installation
 
@@ -83,3 +84,4 @@ image::db.changelog-master_1.X.FINAL.png[]
 * see for grouping and associations  http://plantuml.com/de/class-diagram
 * see for entity relationship diagram http://plantuml.com/de/ie-diagram
 * define how to detect cardinality of relationships
+
