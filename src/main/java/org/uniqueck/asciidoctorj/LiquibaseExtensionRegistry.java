@@ -10,5 +10,6 @@ public class LiquibaseExtensionRegistry implements ExtensionRegistry {
     public void register(Asciidoctor asciidoctor) {
         JavaExtensionRegistry javaExtensionRegistry = asciidoctor.javaExtensionRegistry();
         javaExtensionRegistry.blockMacro(LiquibaseBlockMacroProcessor.class);
+        asciidoctor.requireLibrary("asciidoctor-diagram");
     }
 }

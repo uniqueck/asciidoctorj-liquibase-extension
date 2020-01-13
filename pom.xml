@@ -88,8 +88,8 @@
         <dependency>
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctorj-diagram</artifactId>
-            <version>1.5.18</version>
-            <scope>test</scope>
+            <version>2.0.0</version>
+            <scope>compile</scope>
         </dependency>
 
     </dependencies>
@@ -141,9 +141,9 @@
                         <goals><goal>jar</goal></goals>
                         <configuration>
                             <source>${maven.compiler.source}</source>
+                            <additionalJOption>-Xdoclint:none</additionalJOption>
                         </configuration>
                     </execution>
-
                 </executions>
             </plugin>
             <plugin>
