@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+  
+  	<changeSet author="author@x.de" id="drop_deployment_trigger_table">		
+		<comment>drop trigger DEPLOYMENT_TRIGGER_TRIGGER to manipulate the table only for hsqldb needed</comment>
+		<sql dbms="hsqldb"><![CDATA[DROP TRIGGER DEPLOYMENT_TRIGGER_TRIGGER;]]></sql>
+	</changeSet>
+	
+	<changeSet author="author@x.de" id="rename_zeitpunkt_to_schedule_timestamp">
+		<renameColumn tableName="DEPLOYMENT_TRIGGER" oldColumnName="ZEITPUNKT" newColumnName="SCHEDULE_TIMESTAMP" 
+    	    remarks="Beauftragungszeitpunkt des Deployments" />
+	</changeSet>
+	
+	<changeSet author="author@x.de" id="add_execution_timestamp">
+		<addColumn tableName="DEPLOYMENT_TRIGGER">
+			<column name="EXECUTION_TIMESTAMP" type="datetime(6)" remarks="Ausführungszeitpunkt des Deployments" />							
+		</addColumn>
+	</changeSet>
+	
+	<changeSet author="author@x.de" id="add_last_trigger_id">
+		<addColumn tableName="DEPLOYMENT_TRIGGER">
+			<column name="TRIGGER_ID_LASTDEPLOYMENT" type="number" remarks="Id des letzten Deployments" defaultValue="null">
+				<constraints nullable="true" />
+			</column>				
+		</addColumn>
+		<addForeignKeyConstraint baseTableName="DEPLOYMENT_TRIGGER" baseColumnNames="TRIGGER_ID_LASTDEPLOYMENT" referencedTableName="DEPLOYMENT_TRIGGER" referencedColumnNames="ID" constraintName="DT_FK_LD" onDelete="CASCADE"/>
+	</changeSet>
+	
+	
+	<changeSet author="author@x.de" id="tag-2.0.2">
+		<tagDatabase tag="2.0.2"/>
+	</changeSet>	
+	
+ 	<changeSet author="author@x.de" id="data_migration">
+    	<sql>UPDATE DEPLOYMENT_TRIGGER SET (DEPLOYMENT_TRIGGER.EXECUTION_TIMESTAMP) = (SELECT ZEITPUNKT FROM DEPLOYMENT_LOG WHERE DEPLOYMENT_TRIGGER.id = DEPLOYMENT_LOG.DEPLOYMENTTRIGGER_ID)
+ 				WHERE EXISTS (SELECT 1 FROM DEPLOYMENT_LOG WHERE DEPLOYMENT_TRIGGER.id = DEPLOYMENT_LOG.DEPLOYMENTTRIGGER_ID )
+ 			<comment>migriere zeitpunkt von deployment_log zu execution_timestamp von deployment_trigger</comment>
+ 		</sql>
+ 		
+ 		<sql>UPDATE DEPLOYMENT_TRIGGER SET (DEPLOYMENT_TRIGGER.TRIGGER_ID_LASTDEPLOYMENT) = (select DL2.DEPLOYMENTTRIGGER_ID from DEPLOYMENT_LOG DL1, DEPLOYMENT_LOG DL2 WHERE DL1.DEPLOYMENTLOG_ID = DL2.ID AND DL1.DEPLOYMENTTRIGGER_ID = DEPLOYMENT_TRIGGER.ID)
+ 			WHERE EXISTS (select 1 from DEPLOYMENT_LOG DL1, DEPLOYMENT_LOG DL2 WHERE DL1.DEPLOYMENTLOG_ID = DL2.ID AND DL1.DEPLOYMENTTRIGGER_ID = DEPLOYMENT_TRIGGER.ID)
+ 			<comment>migriere verknüpfung auf das vorherige deployment</comment>
+ 		</sql>
+		
+ 	</changeSet>
+ 	
+ 	
+ 	<changeSet author="author@x.de" id="dropDeploymentLogTrigger">    	     	 
+    	 <preConditions onFail="MARK_RAN"> 
+ 			<or>
+				<dbms type="hsqldb" />
+				<and>
+					<dbms type="oracle" />				
+					<sqlCheck expectedResult="1"> 
+ 						select COUNT(*) from USER_TRIGGERS where TRIGGER_NAME = 'DEPLOYMENT_LOG_TRIGGER'; 
+ 					</sqlCheck> 			 
+				</and>
+			</or> 
+ 		</preConditions>
+ 		<comment>drop trigger DEPLOYMENT_LOG_TRIGGER</comment>    	 	
+    	<sql><![CDATA[DROP TRIGGER DEPLOYMENT_LOG_TRIGGER;]]></sql>
+    	<rollback>
+    		<sql dbms="hsqldb"><![CDATA[CREATE TRIGGER DEPLOYMENT_LOG_TRIGGER BEFORE INSERT ON DEPLOYMENT_LOG REFERENCING NEW ROW AS newrow FOR EACH ROW SET newrow.ID = NEXT VALUE FOR DEPLOYMENT_LOG_SEQ;]]></sql>
+    		<createProcedure dbms="oracle">
+    			<![CDATA[
+				create or replace TRIGGER DEPLOYMENT_LOG_TRIGGER 
+   					before insert on DEPLOYMENT_LOG 
+   						for each row 
+							begin  
+   								if inserting then 
+      								if :NEW."ID" is null then 
+         								select DEPLOYMENT_LOG_SEQ.nextval into :NEW."ID" from dual; 
+      								end if; 
+   								end if; 
+							end;
+				]]>
+			</createProcedure>
+    	</rollback>    	     	 
+ 	</changeSet>
+ 	
+ 	<changeSet author="author@x.de" id="dropDeploymentLogTable">    	
+    	 <preConditions onFail="MARK_RAN">
+    	 	<tableExists tableName="DEPLOYMENT_LOG" />
+    	 </preConditions>    	     	 
+    	 <dropTable tableName="DEPLOYMENT_LOG"/>
+    	 <rollback>
+    	 	<createTable tableName="DEPLOYMENT_LOG">
+				<column name="ID" type="number">
+					<constraints nullable="false" />
+				</column>
+			
+				<column name="DEPLOYMENTTRIGGER_ID" type="number">
+					<constraints nullable="false" />
+				</column>
+			
+				<column name="ZEITPUNKT" type="datetime(6)">
+					<constraints nullable="false" />
+				</column>
+			
+				<column name="DEPLOYMENTLOG_ID" type="number" />
+			</createTable>
+    	 </rollback> 			  
+ 	</changeSet>
+ 	
+ 	<changeSet author="author@x.de" id="dropDeploymentLogSeq">    	
+    	 <preConditions onFail="MARK_RAN">
+    	 	<sequenceExists sequenceName="DEPLOYMENT_LOG_SEQ" />
+    	 </preConditions>    	 
+    	 <dropSequence sequenceName="DEPLOYMENT_LOG_SEQ"/>
+    	 <rollback>
+    	 	<createSequence incrementBy="1" sequenceName="DEPLOYMENT_LOG_SEQ" startValue="1"/>
+    	 </rollback>    	 	
+ 	</changeSet>
+ 	
+ 	
+ 	
+ 		
+</databaseChangeLog>

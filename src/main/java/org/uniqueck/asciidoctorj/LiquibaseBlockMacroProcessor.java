@@ -95,6 +95,7 @@ public class LiquibaseBlockMacroProcessor extends BlockMacroProcessor {
         return null;
     }
 
+    @SuppressWarnings("unused")
     private File getBuildDir(StructuralNode structuralNode) {
         Map<Object, Object> globalOptions = structuralNode.getDocument().getOptions();
 
@@ -117,6 +118,6 @@ public class LiquibaseBlockMacroProcessor extends BlockMacroProcessor {
 
     private File getTargetAsFile(StructuralNode structuralNode, String target) {
         String docdir = getAttribute(structuralNode, "docdir", "");
-        return new File(docdir, target);
+        return "".equals(docdir) ? new File(target) : new File(docdir, target);
     }
 }

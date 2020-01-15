@@ -15,7 +15,7 @@ jobs:
           fi
       - run:
           name: Build and Test
-          command: mvn -B package
+          command: mvn -B verify
       - run:
           name: Save test results
           command: |

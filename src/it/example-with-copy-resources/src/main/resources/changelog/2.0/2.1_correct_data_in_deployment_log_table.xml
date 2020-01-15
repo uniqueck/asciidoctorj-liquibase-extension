@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+	<changeSet author="cauthor@x.de" id="correct_deployment_log_data">
+		<comment>duplicated entries for same deployment_trigger entry
+		</comment>
+		<comment>copy deployment_trigger with id = 593 and change
+			deployment_log entries 495 and 496 to new deployment trigger entries
+		</comment>
+		<sql><![CDATA[INSERT INTO DEPLOYMENT_TRIGGER (ZEITPUNKT, BEAUFTRAGENDER_USER, FILESHERIFF_ID, DEPLOYMENTUMGEBUNG_ID, STATUS, REFERENZ_ART, REFERENZ_ID, FEHLERCODE, FEHLERMESSAGE, BEAUFTRAGENDER_USERNAME, BEAUFTRAGENDER_EMAIL, OUTPUT) SELECT ZEITPUNKT, BEAUFTRAGENDER_USER, FILESHERIFF_ID, DEPLOYMENTUMGEBUNG_ID, STATUS, REFERENZ_ART, REFERENZ_ID, FEHLERCODE, FEHLERMESSAGE, BEAUFTRAGENDER_USERNAME, BEAUFTRAGENDER_EMAIL, OUTPUT FROM DEPLOYMENT_TRIGGER WHERE ID = 593;]]></sql>
+		<sql><![CDATA[UPDATE DEPLOYMENT_LOG SET DEPLOYMENTTRIGGER_ID = (SELECT MAX(ID) AS ID FROM DEPLOYMENT_TRIGGER  WHERE FILESHERIFF_ID = 18928 AND ID > 593 AND REFERENZ_ID = 'DeploymentBug') WHERE ID = 495;]]></sql>
+		<sql><![CDATA[INSERT INTO DEPLOYMENT_TRIGGER (ZEITPUNKT, BEAUFTRAGENDER_USER, FILESHERIFF_ID, DEPLOYMENTUMGEBUNG_ID, STATUS, REFERENZ_ART, REFERENZ_ID, FEHLERCODE, FEHLERMESSAGE, BEAUFTRAGENDER_USERNAME, BEAUFTRAGENDER_EMAIL, OUTPUT) SELECT ZEITPUNKT, BEAUFTRAGENDER_USER, FILESHERIFF_ID, DEPLOYMENTUMGEBUNG_ID, STATUS, REFERENZ_ART, REFERENZ_ID, FEHLERCODE, FEHLERMESSAGE, BEAUFTRAGENDER_USERNAME, BEAUFTRAGENDER_EMAIL, OUTPUT FROM DEPLOYMENT_TRIGGER WHERE ID = 593;]]></sql>
+		<sql><![CDATA[UPDATE DEPLOYMENT_LOG SET DEPLOYMENTTRIGGER_ID = (SELECT MAX(ID) AS ID FROM DEPLOYMENT_TRIGGER  WHERE FILESHERIFF_ID = 18928 AND ID > 593 AND REFERENZ_ID = 'DeploymentBug') WHERE ID = 496;]]></sql>
+	</changeSet>
+
+	<changeSet author="cauthor@x.de" id="tag-2.0.1">
+		<preConditions>
+			<sqlCheck expectedResult="0"><![CDATA[select count(*) FROM (select count(*) from DEPLOYMENT_LOG
+				GROUP BY DEPLOYMENTTRIGGER_ID HAVING COUNT(DEPLOYMENTTRIGGER_ID) >
+				1);]]></sqlCheck>
+		</preConditions>
+		<tagDatabase tag="2.0.1" />
+	</changeSet>
+
+
+
+</databaseChangeLog>

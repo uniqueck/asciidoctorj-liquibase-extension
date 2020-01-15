@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+  
+  	
+	<changeSet author="author@x.de" id="drop_deployment_umgebung_table_trigger">		
+		<comment>drop trigger DEPLOYMENT_UMGEBUNG_TRIGGER not needed anymore</comment>
+		<sql><![CDATA[DROP TRIGGER DEPLOYMENT_UMGEBUNG_TRIGGER;]]></sql>
+	</changeSet>
+	
+ 		
+</databaseChangeLog>

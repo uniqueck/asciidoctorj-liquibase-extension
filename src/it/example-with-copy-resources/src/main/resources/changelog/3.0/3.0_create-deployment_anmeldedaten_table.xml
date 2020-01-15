@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+  
+  	<!-- Deployment Anmeldedaten Seq - Start -->
+	<changeSet author="author@x.de" id="create_DANM_SEQ"> 		
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>
+            	<sequenceExists sequenceName="DANM_SEQ"/>
+        	</not>    	    
+		</preConditions> 	
+		<createSequence incrementBy="1" sequenceName="DANM_SEQ" startValue="1"/>
+ 	</changeSet>
+ 	<!-- Deployment Anmeldedaten Seq - Ende -->
+ 	
+ 	<!-- Deployment Anmeldedaten Table - Start -->
+ 	<changeSet author="author@x.de" id="create_Deployment_Anmeldedaten_TAB">
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>            	
+            	<tableExists tableName="DEPLOYMENT_ANMELDEDATEN"/>
+        	</not>    	    
+		</preConditions> 	
+		<createTable tableName="DEPLOYMENT_ANMELDEDATEN">
+			<column name="ID" type="number">
+				<constraints nullable="false" primaryKeyName="DANM_PK" primaryKey="true"/>
+			</column>
+			<column name="NAME" type="varchar(100)" remarks="Name des technischer Users">
+				<constraints nullable="false" />
+			</column>	
+			<column name="SERVER_ID" type="number" remarks="Fremdschluessel Server"/>
+			<column name="AUTH_TYPE" type="varchar(3)" defaultValue="NO" remarks="Typ für die Authentifizierung"> <!-- PWD, KEY, NO -->
+				<constraints nullable="false"></constraints>
+			</column>
+			<column name="AUTH_TOKEN" type="clob" remarks="Wert für die Authentifizierung"/>
+		</createTable>
+		
+		<addForeignKeyConstraint baseTableName="DEPLOYMENT_ANMELDEDATEN" baseColumnNames="SERVER_ID" referencedTableName="DEPLOYMENT_SERVER" referencedColumnNames="ID" constraintName="DANM_DS_FK" />		
+		
+		<addUniqueConstraint tableName="DEPLOYMENT_ANMELDEDATEN" columnNames="NAME,AUTH_TYPE,SERVER_ID" constraintName="DANM_UK" />
+		
+		<sql>ALTER TABLE DEPLOYMENT_ANMELDEDATEN ADD CONSTRAINT DANM_AUTHTYPE_CHK CHECK (AUTH_TYPE IN ('PWD', 'KEY', 'NO'))</sql>
+	</changeSet>
+	<!-- Deployment Anmeldedaten Table - Ende -->
+	
+
+</databaseChangeLog>

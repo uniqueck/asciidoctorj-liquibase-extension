@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+  
+  	<!-- Deployment Server Seq - Start -->
+	<changeSet author="author@x.de" id="create_DSRV_SEQ"> 		
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>
+            	<sequenceExists sequenceName="DSRV_SEQ"/>
+        	</not>    	    
+		</preConditions> 	
+		<createSequence incrementBy="1" sequenceName="DSRV_SEQ" startValue="1"/>
+ 	</changeSet>
+ 	<!-- Deployment Server Seq - Ende -->
+ 	
+ 	<!-- Deployment Server Table - Start -->
+ 	<changeSet author="author@x.de" id="create_Deployment_Server_TAB">
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>            	
+            	<tableExists tableName="DEPLOYMENT_SERVER"/>
+        	</not>    	    
+		</preConditions> 	
+		<createTable tableName="DEPLOYMENT_SERVER">
+			<column name="ID" type="number">
+				<constraints nullable="false" primaryKeyName="DSRV_PK" primaryKey="true"/>
+			</column>
+			
+			<column name="NAME" type="varchar(100)">
+				<constraints nullable="false"/>
+			</column>			
+			<column name="KURZBESCHREIBUNG" type="varchar(255)" />			
+			<column name="STAGE" type="varchar(40)" remarks="Umgebung aus welchen Sachgebiet der Server aus Rochade kommt"/>
+		</createTable>
+				
+		<addUniqueConstraint tableName="DEPLOYMENT_SERVER" columnNames="NAME,STAGE" constraintName="DSRV_NAMESTAGE_UK" />		
+				
+ 		<sql>ALTER TABLE DEPLOYMENT_SERVER ADD CONSTRAINT DSRV_STAGE_CHK CHECK (STAGE IN ('PRODUKTION', 'ENTWICKLUNG'))</sql>
+ 		
+	</changeSet>
+	<!-- Deployment Server Table - Ende -->
+	
+ 	
+
+	
+
+</databaseChangeLog>

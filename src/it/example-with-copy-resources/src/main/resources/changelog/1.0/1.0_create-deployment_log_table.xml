@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+  
+  	<!-- Deployment_Log Seq - Start -->
+	<changeSet author="author@x.de" id="create_Deployment_Log_SEQ"> 		
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>
+            	<sequenceExists sequenceName="DEPLOYMENT_LOG_SEQ"/>
+        	</not>    	    
+		</preConditions> 	
+		<createSequence incrementBy="1" sequenceName="DEPLOYMENT_LOG_SEQ" startValue="1"/>
+ 	</changeSet>
+ 	<!-- Deployment_Log Seq - Ende -->
+ 	
+ 	<!-- Deployment_Log Table - Start -->
+ 	<changeSet author="author@x.de" id="create_Deployment_Log_TAB">
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>            	
+            	<tableExists tableName="DEPLOYMENT_LOG"/>
+        	</not>    	    
+		</preConditions> 	
+		<createTable tableName="DEPLOYMENT_LOG">
+			<column name="ID" type="number">
+				<constraints nullable="false" />
+			</column>
+		
+			<column name="DEPLOYMENTTRIGGER_ID" type="number">
+				<constraints nullable="false" />
+			</column>
+		
+			<column name="ZEITPUNKT" type="datetime(6)">
+				<constraints nullable="false" />
+			</column>
+		
+			<column name="DEPLOYMENTLOG_ID" type="number" />
+		</createTable>
+	</changeSet>
+	<!-- Deployment_Log Table - Ende -->
+	
+ 	<!-- Deployment_Log Primary Key - Start -->
+ 	<changeSet author="author@x.de" id="create_Deployment_Log_PK">
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>            	
+            	<primaryKeyExists tableName="DEPLOYMENT_LOG" primaryKeyName="DEPLOYMENT_LOG_PK"/>
+        	</not>    	    
+		</preConditions>
+		<addPrimaryKey tableName="DEPLOYMENT_LOG" columnNames="ID" constraintName="DEPLOYMENT_LOG_PK" />		
+	</changeSet>
+	<!-- Deployment_Log Primary Key - Ende -->
+
+	<!-- Deployment_Log Add Foreign Key - Start -->
+ 	<changeSet author="author@x.de" id="add_Deployment_Log_ForeignKey_Deployment_Trigger">
+ 		<preConditions onFail="MARK_RAN">
+    		<not>
+    			<foreignKeyConstraintExists foreignKeyName="DEPLOYMENT_LOG_DEPLOYMENT_FK1"></foreignKeyConstraintExists>
+    		</not>        	    
+		</preConditions>
+		<addForeignKeyConstraint baseTableName="DEPLOYMENT_LOG" baseColumnNames="DEPLOYMENTTRIGGER_ID" referencedTableName="DEPLOYMENT_TRIGGER" referencedColumnNames="ID" constraintName="DEPLOYMENT_LOG_DEPLOYMENT_FK1" />
+	</changeSet>
+	
+	<changeSet author="author@x.de" id="add_Deployment_Log_ForeignKey_Deployment_Log">
+ 		<preConditions onFail="MARK_RAN"> 		
+    	    <not>            	
+    	    	<foreignKeyConstraintExists foreignKeyName="DEPLOYMENT_LOG_DEPLOYMENT_FK2" />
+        	</not>
+		</preConditions>
+		<addForeignKeyConstraint baseTableName="DEPLOYMENT_LOG" baseColumnNames="DEPLOYMENTLOG_ID" referencedTableName="DEPLOYMENT_LOG" referencedColumnNames="ID" constraintName="DEPLOYMENT_LOG_DEPLOYMENT_FK2" />
+	</changeSet>
+	<!-- Deployment_Log Add Foreign Key - Ende -->
+
+	
+	<!-- Deployment_Log Trigger - Start -->
+ 	<changeSet author="author@x.de" id="create_Deployment_Log_TRG"> 		
+ 		<sql dbms="hsqldb">CREATE TRIGGER DEPLOYMENT_LOG_TRIGGER BEFORE INSERT ON DEPLOYMENT_LOG REFERENCING NEW ROW AS newrow FOR EACH ROW SET newrow.ID = NEXT VALUE FOR DEPLOYMENT_LOG_SEQ</sql>
+		<createProcedure dbms="oracle">
+			create or replace TRIGGER DEPLOYMENT_LOG_TRIGGER 
+   				before insert on DEPLOYMENT_LOG 
+   					for each row 
+						begin  
+   							if inserting then 
+      							if :NEW."ID" is null then 
+         							select DEPLOYMENT_LOG_SEQ.nextval into :NEW."ID" from dual; 
+      							end if; 
+   							end if; 
+						end;
+		</createProcedure>		 		
+	</changeSet>
+	<!-- Deployment_Log Trigger - Ende -->
+
+</databaseChangeLog>

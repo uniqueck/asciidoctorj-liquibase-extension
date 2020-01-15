@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+  
+  	<!-- DeploymentLog Seq - Start -->
+	<changeSet author="author@x.de" id="create_DeploymentLog_SEQ"> 		
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>
+            	<sequenceExists sequenceName="DEPLOYMENTLOG_SEQ"/>
+        	</not>    	    
+		</preConditions> 	
+		<createSequence incrementBy="1" sequenceName="DEPLOYMENTLOG_SEQ" startValue="1"/>
+ 	</changeSet>
+ 	<!-- DeploymentLog Seq - Ende -->
+ 	
+ 	<!-- DeploymentLog Table - Start -->
+ 	<changeSet author="author@x.de" id="create_DeploymentLog_TAB">
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>            	
+            	<tableExists tableName="DEPLOYMENTLOG"/>
+        	</not>    	    
+		</preConditions> 	
+		<createTable tableName="DEPLOYMENTLOG">
+			<column name="ID" type="number">
+				<constraints nullable="false" />
+			</column>
+
+			<column name="PROJEKTNAME" type="varchar(100)" />
+			<column name="VERSION" type="varchar(20)" />
+			<column name="CVSVERSIONSTAG" type="varchar(100)" />
+			<column name="REFERENZID" type="varchar(100)" />
+			<column name="BENUTZER" type="varchar(20)" />
+			<column name="TIMESTAMP" type="date" />
+			
+			<column name="SRCSERVER" type="varchar(50)" />
+			<column name="DESTSERVER" type="varchar(50)" />
+			<column name="ZIELUMGEBUNG" type="varchar(50)" />
+			<column name="VORHERIGEVERSION" type="number" />
+		</createTable>		
+ 		
+	</changeSet>
+	<!-- DeploymentLog Table - Ende -->
+	
+ 	<!-- DeploymentLog Primary Key - Start -->
+ 	<changeSet author="author@x.de" id="create_DeploymentLog_PK">
+ 		<preConditions onFail="MARK_RAN">
+    	    <not>            	
+            	<primaryKeyExists tableName="DEPLOYMENTLOG" primaryKeyName="DEPLOYMENTLOG_PK"/>
+        	</not>    	    
+		</preConditions>
+		
+		<addPrimaryKey tableName="DEPLOYMENTLOG" columnNames="ID" constraintName="DEPLOYMENTLOG_PK" />		
+ 		
+	</changeSet>
+	<!-- DeploymentLog Primary Key - Ende -->
+
+	
+	<!-- DeploymentLog Trigger - Start -->
+ 	<changeSet author="author@x.de" id="create_DeploymentLog_TRG"> 		
+ 		<sql dbms="hsqldb">CREATE TRIGGER DEPLOYMENTLOG_TRG BEFORE INSERT ON DEPLOYMENTLOG REFERENCING NEW ROW AS newrow FOR EACH ROW SET newrow.ID = NEXT VALUE FOR DEPLOYMENTLOG_SEQ</sql>
+		<createProcedure dbms="oracle">
+			create or replace TRIGGER DEPLOYMENTLOG_TRG 
+   				before insert on DEPLOYMENTLOG 
+   					for each row 
+						begin  
+   							if inserting then 
+      							if :NEW."ID" is null then 
+         							select DEPLOYMENTLOG_SEQ.nextval into :NEW."ID" from dual; 
+      							end if; 
+   							end if; 
+						end;
+		</createProcedure>		 		
+	</changeSet>
+	<!-- DeploymentLog Trigger - Ende -->
+
+</databaseChangeLog>

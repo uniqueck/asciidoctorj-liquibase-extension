@@ -1,0 +1,5 @@
+= AsciiDoc Liquibase Extension Example
+
+ifndef::liquibase-dir[:liquibase-dir: ../main/resources]
+
+liquibase::{liquibase-dir}/db.changelog-master.xml[]

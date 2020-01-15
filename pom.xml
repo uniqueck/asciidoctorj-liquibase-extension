@@ -158,6 +158,38 @@
                 </executions>
             </plugin>
 
+            <!-- test example project -->
+            <plugin>
+                <artifactId>maven-invoker-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <version>3.0.1</version>
+                <configuration>
+                    <projectsDirectory>${basedir}/src/it</projectsDirectory>
+                    <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+                    <pomIncludes>
+                        <pomInclude>*/pom.xml</pomInclude>
+                    </pomIncludes>
+                    <showErrors>true</showErrors>
+                    <debug>false</debug>
+                    <addTestClassPath>true</addTestClassPath>
+                    <goals>
+                        <goal>clean</goal>
+                        <goal>generate-resources</goal>
+                    </goals>
+                    <postBuildHookScript>validate</postBuildHookScript>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>install</goal>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+
         </plugins>
     </build>
 

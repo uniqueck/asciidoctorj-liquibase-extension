@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+	<preConditions>
+		<!-- nur ausführen, wenn es noch keine Änderung gibt, da liquibase nachträglich 
+			genutzt wird und die tables schon da sind -->
+		<sqlCheck expectedResult="0">SELECT COUNT(*) FROM
+			DATABASECHANGELOG WHERE TAG = '0.X.FINAL'
+		</sqlCheck>
+	</preConditions>
+
+	<include file="1.0_create-deploymentlog_table.xml"
+		relativeToChangelogFile="true" />
+
+	<include file="1.0_create-filesheriff_table.xml"
+		relativeToChangelogFile="true" />
+
+	<include file="1.0_create-deployment_job_table.xml"
+		relativeToChangelogFile="true" />
+
+	<include file="1.0_create-deployment_umgebung_table.xml"
+		relativeToChangelogFile="true" />
+
+	<include file="1.0_create-deployment_trigger_table.xml"
+		relativeToChangelogFile="true" />
+
+	<include file="1.0_create-deployment_log_table.xml"
+		relativeToChangelogFile="true" />
+
+	<changeSet author="author@x.de" id="tag-1.X.FINAL">
+		<tagDatabase tag="1.X.FINAL" />
+	</changeSet>
+
+</databaseChangeLog>
