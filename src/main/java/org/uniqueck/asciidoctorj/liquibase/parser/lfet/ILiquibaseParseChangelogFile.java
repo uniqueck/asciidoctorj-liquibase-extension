@@ -9,7 +9,7 @@
 // profile LFET.Java.Prolog.Standard.Interface.ini not found
 // used LF-ET 2.1.5 (190905b) build in default
 
-package org.uniqueck.asciidoctorj.liquibase.lfet;
+package org.uniqueck.asciidoctorj.liquibase.parser.lfet;
 
 @SuppressWarnings("ALL")
 public interface ILiquibaseParseChangelogFile
@@ -18,7 +18,7 @@ public interface ILiquibaseParseChangelogFile
     // Prolog Standard <----
 
     // Prolog Decision Table ---->
-    // $$Package=org.uniqueck.asciidoctorj.liquibase.lfet
+    // $$Package=org.uniqueck.asciidoctorj.liquibase.parser.lfet
     // $$InterfaceTraceAfterRule=true
     // $$InterfaceRuleGroups = true
     // $$InterfaceName=ILiquibaseParseChangelogFile

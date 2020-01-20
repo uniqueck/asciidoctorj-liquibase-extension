@@ -1,4 +1,4 @@
-package org.uniqueck.asciidoctorj;
+package org.uniqueck.asciidoctorj.liquibase;
 
 import lombok.AccessLevel;
 import lombok.Getter;

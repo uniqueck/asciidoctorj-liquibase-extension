@@ -47,4 +47,12 @@ public class Table {
         return getColumns().stream().filter(c -> c.getForeignKeyColumn() != null).map(c -> c.getForeignKeyColumn().getOwnedTableName()).distinct().collect(Collectors.toList());
     }
 
+    public List<Column> getPrimarykeyColumns() {
+        return getColumns().stream().filter(Column::isPrimary).collect(Collectors.toList());
+    }
+
+    public List<Column> getNonPrimarykeyColumns() {
+        return getColumns().stream().filter(Column::isNotPrimary).collect(Collectors.toList());
+    }
+
 }

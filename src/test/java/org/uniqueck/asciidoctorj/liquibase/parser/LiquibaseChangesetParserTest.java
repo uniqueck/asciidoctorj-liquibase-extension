@@ -1,4 +1,4 @@
-package org.uniqueck.asciidoctorj.liquibase;
+package org.uniqueck.asciidoctorj.liquibase.parser;
 
 import org.junit.jupiter.api.Test;
 import org.uniqueck.asciidoctorj.liquibase.model.Column;
@@ -13,7 +13,7 @@ class LiquibaseChangesetParserTest {
 
     @Test
     void testParseSimpleChangeSetWithOneTableAndOneColumn() {
-        Map<String, Table> parsedTables = new LiquibaseChangesetParser(new File("src/test/resources/simpleChangeSet.xml")).parse();
+        Map<String, Table> parsedTables = new LiquibaseChangesetXMLParser().parse(new File("src/test/resources/simpleChangeSet.xml"),null);
         assertNotNull(parsedTables);
         assertEquals(1, parsedTables.size());
         Table expectedTable = new Table("TablesAndTables");
@@ -25,7 +25,7 @@ class LiquibaseChangesetParserTest {
 
     @Test
     void testParseDBChangeLog() {
-        Map<String, Table> parsedTables = new LiquibaseChangesetParser(new File("src/test/resources/db/db.changelog-master.xml")).parse();
+        Map<String, Table> parsedTables = new LiquibaseChangesetXMLParser().parse(new File("src/test/resources/db/db.changelog-master.xml"), null);
         assertNotNull(parsedTables);
         assertEquals(7, parsedTables.size());
         assertFileSheriffTable(parsedTables);
@@ -40,7 +40,7 @@ class LiquibaseChangesetParserTest {
 
     @Test
     void testParseDBChangeLog_TillTag_1_X_FINAL() {
-        Map<String, Table> parsedTables = new LiquibaseChangesetParser(new File("src/test/resources/db/db.changelog-master.xml"), "1.X.FINAL", new LiquibaseChangesetParser.LoggingFacade() {
+        Map<String, Table> parsedTables = new LiquibaseChangesetXMLParser(new LoggingFacade() {
             @Override
             public void logIgnoredElement(String element) {
 
@@ -55,7 +55,7 @@ class LiquibaseChangesetParserTest {
             public void logParsingError(File inputFile, Exception cause) {
 
             }
-        }).parse();
+        }).parse(new File("src/test/resources/db/db.changelog-master.xml"), "1.X.FINAL");
         assertNotNull(parsedTables);
         assertEquals(6, parsedTables.size());
         assertFileSheriffTable_TillTag_1_X_FINAL(parsedTables);

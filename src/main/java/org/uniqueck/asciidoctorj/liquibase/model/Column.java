@@ -26,4 +26,8 @@ public class Column {
         this.type = type;
     }
 
+    public boolean isNotPrimary() {
+        return !isPrimary();
+    }
+
 }

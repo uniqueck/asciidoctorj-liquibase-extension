@@ -1,4 +1,4 @@
-package org.uniqueck.asciidoctorj.liquibase;
+package org.uniqueck.asciidoctorj.liquibase.parser;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,8 +9,8 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
-import org.uniqueck.asciidoctorj.liquibase.lfet.ILiquibaseParseChangelogFile;
-import org.uniqueck.asciidoctorj.liquibase.lfet.LiquibaseParseChangelogFileRules;
+import org.uniqueck.asciidoctorj.liquibase.parser.lfet.ILiquibaseParseChangelogFile;
+import org.uniqueck.asciidoctorj.liquibase.parser.lfet.LiquibaseParseChangelogFileRules;
 import org.uniqueck.asciidoctorj.liquibase.model.Column;
 import org.uniqueck.asciidoctorj.liquibase.model.Table;
 
@@ -23,36 +23,23 @@ import java.util.Map;
 
 @Slf4j
 @Getter(AccessLevel.PROTECTED)
-public class LiquibaseChangesetParser implements ILiquibaseParseChangelogFile {
-
-
-
-    public interface LoggingFacade {
-
-        String LOG_MESSAGE_IGNORED_ELEMENT = "skip tag '%s'";
-        String LOG_MESSAGE_UNSUPPORTED_ELEMENT = "Unsupported liquibase element '%s' detected";
-
-        void logIgnoredElement(String element);
-        void logUnsupportedElement(String element);
-        void logParsingError(File inputFile, Exception cause);
-
-    }
+class LiquibaseChangesetXMLParser implements LiquibaseChangesetParser, ILiquibaseParseChangelogFile {
 
     private LoggingFacade loggingFacade;
     public static final String TABLE_NAME = "tableName";
     public static final String COLUMN = "column";
     private static final String COLUMN_NAME = "columnName";
     private final SAXBuilder saxBuilder;
-    private final File masterFile;
     @Setter(AccessLevel.PACKAGE)
     private Element currentElement;
     private final Map<String, Table> parsedTables;
     private LiquibaseParseChangelogFileRules decisionTableRules;
-    private final String tillTag;
     private boolean finishParsing;
+    private File masterFile;
+    private String tillTag;
 
-    LiquibaseChangesetParser(File masterFile) {
-        this(new HashMap<>(), masterFile, null, new LoggingFacade() {
+    LiquibaseChangesetXMLParser() {
+        this(new HashMap<>(), new LoggingFacade() {
             @Override
             public void logIgnoredElement(String element) {
                 log.info(String.format(LOG_MESSAGE_IGNORED_ELEMENT, element));
@@ -65,25 +52,25 @@ public class LiquibaseChangesetParser implements ILiquibaseParseChangelogFile {
 
             @Override
             public void logParsingError(File inputFile, Exception cause) {
-                log.error("Error on parsing '" +  inputFile.getPath() + "'", cause);
+                log.error(String.format(LOG_ERROR_ON_PARSING_FILE, inputFile.getPath(), cause.getMessage()), cause);
             }
         });
     }
 
-    public LiquibaseChangesetParser(File masterFile, String tillTag, LoggingFacade loggingFacade) {
-        this(new HashMap<>(), masterFile, tillTag, loggingFacade);
+    public LiquibaseChangesetXMLParser(LoggingFacade loggingFacade) {
+        this(new HashMap<>(), loggingFacade);
     }
 
-    private LiquibaseChangesetParser(Map<String, Table> parsedTables, File masterFile, String tillTag, LoggingFacade loggingFacade) {
+    private LiquibaseChangesetXMLParser(Map<String, Table> parsedTables, LoggingFacade loggingFacade) {
         this.loggingFacade = loggingFacade;
         this.saxBuilder = new SAXBuilder();
         this.parsedTables = parsedTables;
         this.decisionTableRules = new LiquibaseParseChangelogFileRules();
-        this.masterFile = masterFile;
-        this.tillTag = tillTag;
     }
 
-    private boolean parse(Element rootElement) {
+    private boolean parse(File inputFile, String tillTag, Element rootElement) {
+        this.masterFile = inputFile;
+        this.tillTag = tillTag;
         List<Element> elementList = rootElement.getChildren();
         for (Element element : elementList) {
             setCurrentElement(element);
@@ -95,7 +82,9 @@ public class LiquibaseChangesetParser implements ILiquibaseParseChangelogFile {
         return isFinishParsing();
     }
 
-    public Map<String, Table> parse() {
+    public Map<String, Table> parse(File inputFile, String tillTag) {
+        this.masterFile = inputFile;
+        this.tillTag = tillTag;
         try {
             Document rootDocument = getSaxBuilder().build(getMasterFile());
             List<Element> listOfElements = rootDocument.getRootElement().getChildren();
@@ -163,8 +152,8 @@ public class LiquibaseChangesetParser implements ILiquibaseParseChangelogFile {
     @Override
     public void doFollowInclude() {
         String fileName = getCurrentElement().getAttributeValue("file");
-        LiquibaseChangesetParser parser = new LiquibaseChangesetParser(getParsedTables(), new File(getMasterFile().getParentFile(), fileName), getTillTag(), getLoggingFacade());
-        parser.parse();
+        LiquibaseChangesetXMLParser parser = new LiquibaseChangesetXMLParser(getParsedTables(), getLoggingFacade());
+        parser.parse(new File(getMasterFile().getParentFile(), fileName), getTillTag());
         this.finishParsing = parser.isFinishParsing();
     }
 
@@ -185,7 +174,7 @@ public class LiquibaseChangesetParser implements ILiquibaseParseChangelogFile {
 
     @Override
     public void doParseChangeSet() {
-        this.finishParsing = new LiquibaseChangesetParser(getParsedTables(), getMasterFile(), getTillTag(), getLoggingFacade()).parse(getCurrentElement());
+        this.finishParsing = new LiquibaseChangesetXMLParser(getParsedTables(), getLoggingFacade()).parse(getMasterFile(), getTillTag(), getCurrentElement());
     }
 
     @Override

@@ -1,4 +1,4 @@
-package org.uniqueck.asciidoctorj;
+package org.uniqueck.asciidoctorj.liquibase;
 
 import org.junit.jupiter.api.Test;
 

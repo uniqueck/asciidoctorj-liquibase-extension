@@ -4,6 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <artifactId>asciidoctorj-extension-parent</artifactId>
+        <groupId>com.uniqueck.asciidoctorj</groupId>
+        <version>0.0.1-alpha.4</version>
+    </parent>
+
     <groupId>com.uniqueck</groupId>
     <artifactId>asciidoctorj-liquibase-extension</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -51,13 +57,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${junit-jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j-api.version}</version>
@@ -73,11 +72,6 @@
             <artifactId>logback-classic</artifactId>
             <version>${logback-classic.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.asciidoctor</groupId>
-            <artifactId>asciidoctorj</artifactId>
-            <version>${asciidoctorj.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>org.jdom</groupId>
@@ -88,9 +82,8 @@
         <dependency>
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctorj-diagram</artifactId>
-            <version>2.0.0</version>
-            <scope>compile</scope>
         </dependency>
+
 
     </dependencies>
 
@@ -98,11 +91,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <asciidoctorj.version>2.1.0</asciidoctorj.version>
         <commons-io.version>2.6</commons-io.version>
         <logback-classic.version>1.2.3</logback-classic.version>
         <slf4j-api.version>1.7.28</slf4j-api.version>
-        <junit-jupiter.version>5.5.2</junit-jupiter.version>
         <lombok.version>1.18.8</lombok.version>
     </properties>
 
@@ -126,37 +117,6 @@
         </pluginManagement>
 
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M3</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.1.1</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals><goal>jar</goal></goals>
-                        <configuration>
-                            <source>${maven.compiler.source}</source>
-                            <additionalJOption>-Xdoclint:none</additionalJOption>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals><goal>jar</goal></goals>
-                    </execution>
-                </executions>
-            </plugin>
 
             <!-- test example project -->
             <plugin>
@@ -192,6 +152,27 @@
 
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-uniqueck-asciidoctorj</id>
+            <name>bintray</name>
+            <url>https://dl.bintray.com/uniqueck/asciidoctorj</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-uniqueck-asciidoctorj</id>
+            <name>bintray-plugins</name>
+            <url>https://dl.bintray.com/uniqueck/asciidoctorj</url>
+        </pluginRepository>
+    </pluginRepositories>
 
 
 </project>
