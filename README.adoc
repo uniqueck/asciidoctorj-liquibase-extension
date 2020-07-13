@@ -15,6 +15,9 @@ This extensions needs __asciidoctor-diagram__ extension to work probably.
 The extension is available in https://bintray.com/bintray/jcenter[JCenter].
 To use this extension declare it as a dependency in asciidoctor-maven-plugin configuration.
 
+Prerequisites:
+* graphviz - https://graphviz.org/
+
 [subs="attributes, verbatim"]
 [source, xml]
 ----
