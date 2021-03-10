@@ -72,9 +72,26 @@ liquibase::src/test/resources/db/db.changelog-master.xml[tillTag=1.X.FINAL]
 .Generated image for liquibase macro with attribute tillTag
 image::db.changelog-master_1.X.FINAL.png[]
 
+.liquibase macro with attribute fileName set to diagram
+[source, asciidoc]
+----
+liquibase::src/test/resources/db/db.changelog-master.xml[fileName = diagram]
+----
+
+.liquibase macro with attribute outputFormat set to svg
+[source, asciidoc]
+----
+liquibase::src/test/resources/db/db.changelog-master.xml[fileName = diagram, outputFormat = svg]
+----
+
 === Attributes
 
 * *tillTag* parse liquibase changeset files only until tagDatabase matched definied value
+* *fileName* generates a diagram with the specified file name.
+* *outputFormat* generates a diagram with the specified format. Only png and svg formats are supported.
+
+*Note*: the fileName attribute has to be present for the output format to be considered.
+
 
 == ToDo
 
