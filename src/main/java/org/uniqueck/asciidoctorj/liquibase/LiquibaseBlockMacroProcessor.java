@@ -41,7 +41,7 @@ public class LiquibaseBlockMacroProcessor extends BlockMacroProcessor {
             }
         }).parse(sourceFile, getTillTag(attributes));
 
-        content.add("[plantuml]");
+        content.add(createAttributes(attributes));
         content.add("----");
 
         content.add("'hide the spot");
@@ -88,8 +88,35 @@ public class LiquibaseBlockMacroProcessor extends BlockMacroProcessor {
         return content;
     }
 
+    private String createAttributes(Map<String, Object> attributes) {
+        String fileName = getFileName(attributes);
+        String outputFormat = getOutputFormat(attributes);
+        StringBuilder sb = new StringBuilder();
+        sb.append("[plantuml");
+        if(fileName != null){
+            sb.append(", ");
+            sb.append(fileName);
+
+            if(outputFormat != null){ // need to specify filename for output format to be considered
+                sb.append(", ");
+                sb.append(outputFormat);
+            }
+        }
+
+        sb.append("]");
+        return sb.toString();
+    }
+
     private String getTillTag(Map<String, Object> attributes) {
         return (String) attributes.getOrDefault("tillTag", null);
+    }
+
+    private String getFileName(Map<String, Object> attributes) {
+        return (String) attributes.getOrDefault("fileName", null);
+    }
+
+    private String getOutputFormat(Map<String, Object> attributes) {
+        return (String) attributes.getOrDefault("outputFormat", null);
     }
 
     @Override

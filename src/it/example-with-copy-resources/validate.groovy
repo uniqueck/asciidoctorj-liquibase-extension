@@ -18,7 +18,7 @@ if (!imagesDirectory.exists()) {
 } else {
     def files = imagesDirectory.listFiles()
     assert 1, files.length
-    assert files[0].name.endsWith(".png")
+    assert files[0].name.endsWith(".png") || files[0].name.endsWith(".svg")
 }
 
 

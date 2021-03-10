@@ -34,6 +34,56 @@ class LiquibaseBlockMacroProcessorTest extends AbstractAsciidoctorTestHelper {
         List<String> asciiDocMarkup = new LiquibaseBlockMacroProcessor().generateAsciiDocMarkup(null, new File("src/test/resources/simpleChangeSet.xml"), new HashMap<>());
         assertNotNull(asciiDocMarkup);
         assertFalse(asciiDocMarkup.isEmpty());
+        assertTrue(asciiDocMarkup.contains("[plantuml]"));
+        assertTrue(asciiDocMarkup.contains("skinparam tabSize 4"));
+        assertTrue(asciiDocMarkup.contains("hide circle"));
+        assertTrue(asciiDocMarkup.contains("skinparam linetype ortho"));
+
+        assertTrue(asciiDocMarkup.contains("\\t\\tCOLUMN1 : TEXT"));
+
+    }
+
+    @Test
+    void generateAsciiDocMarkupWithFileName() {
+        HashMap<String, Object> attributes = new HashMap<>();
+        attributes.put("fileName", "diagram");
+        List<String> asciiDocMarkup = new LiquibaseBlockMacroProcessor().generateAsciiDocMarkup(null, new File("src/test/resources/simpleChangeSet.xml"), attributes);
+        assertNotNull(asciiDocMarkup);
+        assertFalse(asciiDocMarkup.isEmpty());
+        assertTrue(asciiDocMarkup.contains("[plantuml, diagram]"));
+        assertTrue(asciiDocMarkup.contains("skinparam tabSize 4"));
+        assertTrue(asciiDocMarkup.contains("hide circle"));
+        assertTrue(asciiDocMarkup.contains("skinparam linetype ortho"));
+
+        assertTrue(asciiDocMarkup.contains("\\t\\tCOLUMN1 : TEXT"));
+
+    }
+
+    @Test
+    void generateAsciiDocMarkupWithFileNameAndOutputFormat() {
+        HashMap<String, Object> attributes = new HashMap<>();
+        attributes.put("fileName", "diagram");
+        attributes.put("outputFormat", "svg");
+        List<String> asciiDocMarkup = new LiquibaseBlockMacroProcessor().generateAsciiDocMarkup(null, new File("src/test/resources/simpleChangeSet.xml"), attributes);
+        assertNotNull(asciiDocMarkup);
+        assertFalse(asciiDocMarkup.isEmpty());
+        assertTrue(asciiDocMarkup.contains("[plantuml, diagram, svg]"));
+        assertTrue(asciiDocMarkup.contains("skinparam tabSize 4"));
+        assertTrue(asciiDocMarkup.contains("hide circle"));
+        assertTrue(asciiDocMarkup.contains("skinparam linetype ortho"));
+
+        assertTrue(asciiDocMarkup.contains("\\t\\tCOLUMN1 : TEXT"));
+
+    }
+
+    @Test
+    void generateAsciiDocMarkupWithoutFileNameAndWithOutputFormat() {
+        HashMap<String, Object> attributes = new HashMap<>();
+        attributes.put("outputFormat", "svg");
+        List<String> asciiDocMarkup = new LiquibaseBlockMacroProcessor().generateAsciiDocMarkup(null, new File("src/test/resources/simpleChangeSet.xml"), attributes);
+        assertNotNull(asciiDocMarkup);
+        assertFalse(asciiDocMarkup.isEmpty());
+        assertTrue(asciiDocMarkup.contains("[plantuml]"));
         assertTrue(asciiDocMarkup.contains("skinparam tabSize 4"));
         assertTrue(asciiDocMarkup.contains("hide circle"));
         assertTrue(asciiDocMarkup.contains("skinparam linetype ortho"));
