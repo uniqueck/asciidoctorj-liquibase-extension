@@ -9,8 +9,6 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
-import org.uniqueck.asciidoctorj.liquibase.parser.lfet.ILiquibaseParseChangelogFile;
-import org.uniqueck.asciidoctorj.liquibase.parser.lfet.LiquibaseParseChangelogFileRules;
 import org.uniqueck.asciidoctorj.liquibase.model.Column;
 import org.uniqueck.asciidoctorj.liquibase.model.Table;
 
