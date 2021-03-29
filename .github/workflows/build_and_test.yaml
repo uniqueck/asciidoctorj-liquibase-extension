@@ -9,5 +9,14 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
+      - name: Install graphviz
+        run: sudo apt-get install graphviz
+      - name: Cache local maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2
       - name: build and run tests
         run: mvn --batch-mode verify
