@@ -42,7 +42,7 @@
                 </executions>
                 <dependencies>
                     <dependency>
-                        <groupId>com.uniqueck</groupId>
+                        <groupId>de.uniqueck.asciidoctorj.extensions</groupId>
                         <artifactId>asciidoctorj-liquibase-extension</artifactId>
                         <version>@project.version@</version>
                     </dependency>
@@ -51,43 +51,5 @@
         </plugins>
 
     </build>
-
-
-    <repositories>
-        <repository>
-            <snapshots>
-                <enabled>
-                    false
-                </enabled>
-            </snapshots>
-            <id>
-                bintray-uniqueck-asciidoctorj
-            </id>
-            <name>
-                bintray
-            </name>
-            <url>
-                https://dl.bintray.com/uniqueck/asciidoctorj
-            </url>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <snapshots>
-                <enabled>
-                    false
-                </enabled>
-            </snapshots>
-            <id>
-                bintray-uniqueck-asciidoctorj
-            </id>
-            <name>
-                bintray-plugins
-            </name>
-            <url>
-                https://dl.bintray.com/uniqueck/asciidoctorj
-            </url>
-        </pluginRepository>
-    </pluginRepositories>
 
 </project>
