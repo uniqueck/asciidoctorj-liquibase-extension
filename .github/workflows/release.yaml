@@ -1,0 +1,60 @@
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+          server-id: ossrh
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-private-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - name: Install graphviz
+        run: sudo apt-get install graphviz
+
+      - name: set tag as version
+        run: |
+          mvn \
+          --batch-mode \
+          --no-transfer-progress \
+          versions:set -DnewVersion=${GITHUB_REF##*/v} \
+          versions:commit
+
+      - id: tag_name
+        run: |
+          echo ::set-output name=TAG_NAME::${GITHUB_REF#refs/tags/}
+
+      - name: deploy
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
+        run: |
+          mvn \
+          --batch-mode \
+          --no-transfer-progress \
+          clean deploy -P deploy-to-sonatype
+
+      - name: create Release
+        uses: docker://antonyurchenko/git-release:latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRAFT_RELEASE: "false"
+          PRE_RELEASE: "false"
+          CHANGELOG_FILE: "CHANGELOG.md"
+          ALLOW_EMPTY_CHANGELOG: "false"
+          ALLOW_TAG_PREFIX: "false"
+        with:
+          args: |
+            ./target/asciidoctorj-liquibase-extension.jar
+            ./target/asciidoctorj-liquibase-extension-javadoc.jar
+            ./target/asciidoctorj-liquibase-extension-sources.jar
