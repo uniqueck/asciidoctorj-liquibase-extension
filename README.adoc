@@ -3,17 +3,16 @@
 :imagesdir: doc/images
 = AsciidoctorJ Liquibase Extension
 
-image:https://circleci.com/gh/uniqueck/asciidoctorj-liquibase-extension/tree/master.svg?style=shield["CircleCI", link="https://circleci.com/gh/uniqueck/asciidoctorj-liquibase-extension/tree/master"]
+image:https://github.com/uniqueck/asciidoctorj-liquibase-extension/actions/workflows/ci.yaml/badge.svg?branch=master["GitHub Actions", link="https://github.com/uniqueck/asciidoctorj-liquibase-extension/actions/workflows/ci.yaml?branch=master"]
 image:https://img.shields.io/badge/License-MIT-yellow.svg["MIT License", link="https://opensource.org/licenses/MIT"]
-image:https://api.bintray.com/packages/uniqueck/asciidoctorj/asciidoctorj-liquibase-extension/images/download.svg[link="https://bintray.com/uniqueck/asciidoctorj/asciidoctorj-liquibase-extension/_latestVersion"]
+image:https://maven-badges.herokuapp.com/maven-central/de.uniqueck.asciidoctorj.extensions/asciidoctorj-liquibase-extension/badge.svg?style=plastic[link="https://maven-badges.herokuapp.com/maven-central/de.uniqueck.asciidoctorj.extensions/asciidoctorj-liquibase-extension"]
 
 This AsciidoctorJ extension provides a macro to generate a entity relationship diagram based on https://www.liquibase.org/index.html[liquibase] changeset files. Currently only xml format for liquibase changeset files are supported.
 This extensions needs __asciidoctor-diagram__ extension to work probably.
 
 == Installation
 
-The extension is available in https://bintray.com/bintray/jcenter[JCenter].
-To use this extension declare it as a dependency in asciidoctor-maven-plugin configuration.
+To use this extension declare it as a dependency in https://github.com/asciidoctor/asciidoctor-maven-plugin[asciidoctor-maven-plugin] configuration or https://asciidoctor.org/docs/asciidoctor-gradle-plugin/[asciidoctor-gradle-plugin].
 
 Prerequisites:
 * graphviz - https://graphviz.org/
@@ -24,7 +23,7 @@ Prerequisites:
 <plugin>
 	<groupId>org.asciidoctor</groupId>
 	<artifactId>asciidoctor-maven-plugin</artifactId>
-	<version>2.0.0-RC.1</version>
+	<version>LATEST</version>
 	<executions>
 		<execution>
 			<id>output-html</id>
@@ -41,14 +40,14 @@ Prerequisites:
 		<dependency> <!--1-->
 			<groupId>com.uniqueck</groupId>
 			<artifactId>asciidoctorj-liquibase-extension</artifactId>
-			<version>{version}</version> <!--2-->
+			<version>LATEST</version> <!--2-->
 		</dependency>
 	</dependencies>
 </plugin>
 ----
 
 <1> asciidoctorj-liquibase-extension is added
-<2> check for the latest version at https://bintray.com/bintray/jcenter[JCenter]
+<2> check for the latest version at https://maven-badges.herokuapp.com/maven-central/de.uniqueck.asciidoctorj.extensions/asciidoctorj-liquibase-extension[Maven central]
 
 
 == How To Use

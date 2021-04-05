@@ -23,6 +23,12 @@
     <url>https://github.com/uniqueck/asciidoctorj-liquibase-extension</url>
     <name>AsciidoctorJ Liquibase Extension</name>
     <description>Asciidoctor extension to render changesets as entity relationship diagram</description>
+    <licenses>
+        <license>
+            <name>MIT</name>
+            <url>https://github.com/uniqueck/asciidoctorj-liquibase-extension/blob/master/LICENSE</url>
+        </license>
+    </licenses>
 
 
     <scm>
