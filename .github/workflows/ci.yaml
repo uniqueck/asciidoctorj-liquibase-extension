@@ -32,6 +32,16 @@ jobs:
           --no-transfer-progress \
           verify
 
+      - name: archive test results
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: test-results-${{ matrix.jdk }}
+          path: |
+            target/it
+            target/surefire-reports
+
+
   sonar:
     runs-on: ubuntu-latest
     steps:
