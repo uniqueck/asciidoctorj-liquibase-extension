@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.0] - 2021-04-05
+## [0.1.1] - 2021-04-05
 
 ### :rocket: Added
--  Add attributes to control output format and filename [@sebastian-elkhouri](https://github.com/sebastian-elkhouri) 
+-  Add attributes to control output format and filename [@sebastian-elkhouri](https://github.com/sebastian-elkhouri)
