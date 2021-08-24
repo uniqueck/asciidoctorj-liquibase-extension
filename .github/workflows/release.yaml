@@ -5,6 +5,7 @@ on:
 
 jobs:
   release:
+    if: github.event.base_ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -59,3 +60,18 @@ jobs:
             ./target/asciidoctorj-liquibase-extension.jar
             ./target/asciidoctorj-liquibase-extension-javadoc.jar
             ./target/asciidoctorj-liquibase-extension-sources.jar
+
+      - name: Set release version
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+      - name: Announcement
+        uses: yuzutech/zulip-send-message-action@v0.1.0
+        with:
+          username: ${{ secrets.ZULIP_USERNAME }}
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          organization-url: 'https://asciidoctor.zulipchat.com'
+          to: '279652'
+          type: 'stream'
+          topic: 'contrib releases'
+          content: |
+            asciidoctorj-liquibase-extension [${{ env.RELEASE_VERSION }}](https://github.com/uniqueck/asciidoctorj-liquibase-extension/releases/tag/${{ env.RELEASE_VERSION }}) is out!
