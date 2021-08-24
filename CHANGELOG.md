@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### :package: Dependency updates
+- Bump commons-io from 2.6 to 2.7 [(#7)](https://github.com/uniqueck/asciidoctorj-liquibase-extension/pull/7) @dependabot
+
 ## [0.1.0] - 2021-04-05
 
 ### :rocket: Added
